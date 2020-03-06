@@ -1,5 +1,5 @@
 package com.screens;
-//
+
 // LibGDX imports
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.entities.Firestation;
 import com.misc.SFX;
+import com.misc.SaveControls;
 import com.pathFinding.Junction;
 import com.pathFinding.MapGraph;
 import com.badlogic.gdx.Gdx;
@@ -55,6 +56,7 @@ public class GameScreen implements Screen {
 
 	// A constant variable to store the game
 	final Kroy game;
+	private SaveControls saveControls;
 
 	// Private values for rendering
 	private final ShapeRenderer shapeRenderer;
@@ -115,6 +117,9 @@ public class GameScreen implements Screen {
 	public GameScreen(final Kroy game) {
 		// Assign the game to a property so it can be used when transitioning screens
 		this.game = game;
+
+		this.saveControls = new SaveControls();
+		this.score= 200;
 
 		// ---- 1) Create new instance for all the objects needed for the game ---- //
 
@@ -517,6 +522,10 @@ public class GameScreen implements Screen {
 		}
 	}
 
+	public void saveGame() {
+		this.saveControls.saveGame(2, this.getActiveTruck(), this.firestation);
+	}
+
 	/*
 	 *  =======================================================================
 	 *                          Added for Assessment 3
@@ -697,7 +706,7 @@ public class GameScreen implements Screen {
 		ArrayList<Texture> truckTextures = this.buildFiretuckTextures(type.getColourString());
 		Firetruck firetruck = new Firetruck(truckTextures, this.waterFrames, type,
 				(TiledMapTileLayer) map.getLayers().get("Collision"), (TiledMapTileLayer) map.getLayers().get("Carpark"),
-				this.firestation, isActive);
+				this.firestation, isActive, this.saveControls);
 		if (isActive) {
 			if (this.firestation.getActiveFireTruck() == null) {
 				this.firestation.setActiveFireTruck(firetruck);

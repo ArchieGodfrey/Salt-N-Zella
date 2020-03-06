@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.misc.Constants;
 import com.misc.Arrow;
 import com.misc.ResourceBar;
+import com.misc.SaveControls;
 import com.sprites.MovementSprite;
 
 // Java util import
@@ -74,7 +75,7 @@ public class Firetruck extends MovementSprite {
      * @param isBought       <code>true</code> if truck is bought to start with
      *                       <code>false</code> if truck needs to still be bought
      */
-    public Firetruck(ArrayList<Texture> textureSlices, ArrayList<Texture> frames, TruckType type, TiledMapTileLayer collisionLayer, TiledMapTileLayer carparkLayer, Firestation fireStation, boolean isBought) {
+    public Firetruck(ArrayList<Texture> textureSlices, ArrayList<Texture> frames, TruckType type, TiledMapTileLayer collisionLayer, TiledMapTileLayer carparkLayer, Firestation fireStation, boolean isBought, SaveControls saveControls) {
         super(textureSlices.get(textureSlices.size() - 1), collisionLayer);
         this.waterFrames = frames;
         this.firetruckSlices = textureSlices;
@@ -87,6 +88,11 @@ public class Firetruck extends MovementSprite {
         this.isArrowVisible = false;
         this.carparkLayer = carparkLayer;
         this.isBought = isBought;
+
+        // If loading from a save file
+        if (saveControls.getCurrentSaveNumber() != 0) {
+            this.getHealthBar().setCurrentAmount(saveControls.getSavedFiretruck(type).health);
+        }
     }
 
     /**
@@ -107,7 +113,6 @@ public class Firetruck extends MovementSprite {
         // Start the firetruck facing left
         this.rotate(-90);
         this.resetSprite();
-
     }
 
     /**

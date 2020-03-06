@@ -177,6 +177,14 @@ public class ResourceBar {
     }
 
     /** 
+     * Set the current resource amount.
+     * @param amount The amount the current resource amount will be set to;
+     */
+    public void setCurrentAmount(int amount) {
+        this.currentResourceAmount = amount;
+    }
+
+    /** 
      * Get the max resource amount.
      * @return The max resource amount;
      */

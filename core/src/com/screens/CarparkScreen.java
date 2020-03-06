@@ -229,6 +229,7 @@ public class CarparkScreen implements Screen {
                         if (boughtTruck(selectedTruck)){
                             firestation.changeFiretruck(index);
                         }
+                        gameScreen.saveGame();
                         show();
                     }
                 });
