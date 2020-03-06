@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.misc.Arrow;
+import com.misc.SaveControls;
 import com.misc.Constants.TruckType;
 import com.testrunner.GdxTestRunner;
 import org.junit.Before;
@@ -23,6 +24,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 @RunWith(GdxTestRunner.class)
 public class FiretruckTest {
 
+    @Mock
+    SaveControls saveControls;
     @Mock
     Firestation firestation;
     @Mock
@@ -45,7 +48,7 @@ public class FiretruckTest {
         when(textureMock.getHeight()).thenReturn(10);
         when(textureMock.getWidth()).thenReturn(10);
         when(texturesMock.get(texturesMock.size() - 1)).thenReturn(textureMock);
-        firetruckUnderTest = new Firetruck(texturesMock, texturesMock, TruckType.BLUE, t1, t2, firestation, false);
+        firetruckUnderTest = new Firetruck(texturesMock, texturesMock, TruckType.BLUE, t1, t2, firestation, false, saveControls);
     }
 
     /**
