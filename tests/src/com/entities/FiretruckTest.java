@@ -5,9 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.misc.Arrow;
-import com.misc.Constants;
 import com.misc.Constants.TruckType;
-import com.misc.ResourceBar;
 import com.testrunner.GdxTestRunner;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,12 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 

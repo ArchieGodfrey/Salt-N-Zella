@@ -366,9 +366,6 @@ public class GameScreen implements Screen {
 		// Render background map layers
 		renderer.render(backgroundLayers);
 
-		// Render map foreground layers
-		renderer.render(foregroundLayers);
-
 		// Render the arrow
 		firestation.updateActiveArrow(shapeRenderer, ETFortresses);
 
@@ -408,6 +405,9 @@ public class GameScreen implements Screen {
 		// Finish rendering
 		this.game.batch.end();
 		shapeRenderer.end();
+
+		// Render map foreground layers
+		renderer.render(foregroundLayers);
 
 		// Draw the score, time and FPS to the screen at given co-ordinates
 		this.scoreLabel.setText("Score: " + this.score);

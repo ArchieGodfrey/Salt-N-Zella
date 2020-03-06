@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.screens.MainMenuScreen;
-import com.screens.MinigameScreen;
 
 /**
  * Entry point to the main game, called by DesktopLauncher.
@@ -35,7 +34,7 @@ public class Kroy extends Game {
 	 * Display the main menu screen upon game start.
 	 */
 	public void create() {
-		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+		//Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
 
 		this.setFonts();

@@ -1,11 +1,9 @@
 package com.sprites;
 
-import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Queue;
 import com.pathFinding.Junction;
 import com.pathFinding.MapGraph;
-import com.pathFinding.Road;
 import com.testrunner.GdxTestRunner;
 import org.junit.Before;
 import org.junit.Test;
