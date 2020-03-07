@@ -65,14 +65,17 @@ public class SaveControls {
         public Constants.TruckType type;
         // The saved health
         public int health;
+        // The saved water
+        public int water;
         // The saved respawn location
-        public float respawnLocation;
+        public Constants.CarparkEntrances respawnLocation;
 
         // Default constructor, creates an empty save file
         public SavedFiretruck() {};
         // Overloaded constructor, creates a full firetruck save
-        public SavedFiretruck(Constants.TruckType type, int health, float respawnLocation) {
+        public SavedFiretruck(Constants.TruckType type, int health, int water, Constants.CarparkEntrances respawnLocation) {
             this.health = health;
+            this.water = water;
             this.respawnLocation = respawnLocation;
             this.type = type;
         }
@@ -98,10 +101,18 @@ public class SaveControls {
         // Create an array to store all trucks to be saved
         ArrayList<SavedFiretruck> savedFiretrucks = new ArrayList<SavedFiretruck>();
         // Add the active truck to the list
-        savedFiretrucks.add(new SavedFiretruck(activeTruck.getType(), 10, 1));
+        savedFiretrucks.add(new SavedFiretruck(activeTruck.getType(),
+            activeTruck.getHealthBar().getCurrentAmount(),
+            activeTruck.getWaterBar().getCurrentAmount(),
+            activeTruck.getCarpark()
+        ));
         // Add the remaining trucks to the list
         for (Firetruck firetruck : firestation.getParkedFireTrucks()) {
-            savedFiretrucks.add(new SavedFiretruck(firetruck.getType(), 10, 1));
+            savedFiretrucks.add(new SavedFiretruck(firetruck.getType(),
+            firetruck.getHealthBar().getCurrentAmount(),
+            firetruck.getWaterBar().getCurrentAmount(),
+            firetruck.getCarpark()
+        ));
         }
         // Create a new save file
         SaveFile saveFile = new SaveFile(savedFiretrucks);

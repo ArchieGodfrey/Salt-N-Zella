@@ -1168,8 +1168,9 @@ public class GameScreen implements Screen {
 
 	/*
 	 *  =======================================================================
-	 *                          Added for Assessment 3
+	 *        Modified for Assessment 3		@author Archie Godfrey
 	 *  =======================================================================
+	 * 	Stopped resetting stats and position if loading from a save file
 	 */
 	/**
 	 * Multiple statements to reset the game after the
@@ -1189,10 +1190,13 @@ public class GameScreen implements Screen {
 			popupMessages.clear();
 			showPopupText("Good luck!", 1, 5);
 			firestationTimer.start();
-			firestation.getActiveFireTruck().getWaterBar().resetResourceAmount();
-			firestation.getActiveFireTruck().setRespawnLocation(0);
-			firestation.getActiveFireTruck().respawn();
-			firestation.getActiveFireTruck().setHose(false);
+			// If loading from a save file
+			if (this.game.getSaveControls().getCurrentSaveNumber() == 0) {
+				firestation.getActiveFireTruck().getWaterBar().resetResourceAmount();
+				firestation.getActiveFireTruck().setRespawnLocation(0);
+				firestation.getActiveFireTruck().respawn();
+				firestation.getActiveFireTruck().setHose(false);
+			}
 			this.ETPatrols.clear();
 			this.camera.zoom = 1.3f;
 			this.zoomTarget = 1.2f;

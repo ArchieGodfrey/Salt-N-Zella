@@ -172,7 +172,7 @@ public class ResourceBar {
      * Get the current resource amount.
      * @return The current resource amount;
      */
-    public float getCurrentAmount() {
+    public int getCurrentAmount() {
         return this.currentResourceAmount;
     }
 
