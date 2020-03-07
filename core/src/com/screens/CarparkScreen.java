@@ -64,6 +64,10 @@ public class CarparkScreen implements Screen {
     private final ArrayList<Label> activeStatsLabel;
     private final ArrayList<Label> activeStatsValue;
 
+    private final VerticalGroup saveGroup;
+    private final ArrayList<TextButton> saveTextButtons;
+    private final ArrayList<TextButton> saveOptionButtons;
+
     /**
      * Constructor for car park screen
      *
@@ -99,7 +103,8 @@ public class CarparkScreen implements Screen {
 
         // create tables
         Table mainTable = new Table(); // stores everything in
-        Table previewGroup = new Table(); // stores the
+        Table saveAndPreviewTale = new Table(); // stores the save files and preview screen
+        Table previewGroup = new Table(); // stores the active truck image and stats table
 
         HorizontalGroup header = new HorizontalGroup();
         header.space(200);
@@ -126,6 +131,13 @@ public class CarparkScreen implements Screen {
         // preview row
         mainTable.row().expand();
 
+        // The vertical group to store the save buttons
+        Stack saveStack = new Stack();
+        saveGroup = new VerticalGroup();
+        saveOptionButtons = new ArrayList<>();
+        saveTextButtons = new ArrayList<>();
+        generateSaveButtons();
+
         // background shape behind stats table
         Stack previewStack = new Stack();
         previewStack.add(new BackgroundBox(300, 300, Color.DARK_GRAY, 10));
@@ -138,12 +150,16 @@ public class CarparkScreen implements Screen {
         tableStats = new Table();
         previewGroup.add(tableStats);
 
-        previewStack.add(previewGroup);
-
         // create a padded border around the preview
         previewGroup.pad(20);
 
-        mainTable.add(previewStack);
+        // Store the save group and preview group in their own stacks
+        // then combine then into one table and add that to the main table
+        saveStack.add(saveGroup);
+        previewStack.add(previewGroup);
+        saveAndPreviewTale.add(saveStack);
+        saveAndPreviewTale.add(previewStack);
+        mainTable.add(saveAndPreviewTale);
 
         // TRUCK SELECTOR
 
@@ -159,6 +175,7 @@ public class CarparkScreen implements Screen {
         generateTruckButtons();
 
         // preview row
+        mainTable.row().space(20);
         mainTable.row().expand();
 
         Stack selectorStack = new Stack();
@@ -171,13 +188,12 @@ public class CarparkScreen implements Screen {
 
         // create close button
         closeButton = new TextButton("Close", skin);
-        mainTable.add(closeButton).center().width(150).height(40).padBottom(40).padTop(40);
+        mainTable.add(closeButton).center().width(150).height(40).padBottom(40);
 
         mainTable.setFillParent(true);
 
         stage.addActor(background);
         stage.addActor(mainTable);
-
     }
 
     /**
@@ -199,6 +215,9 @@ public class CarparkScreen implements Screen {
         generateTruckButtons();
         generateTruckSelector();
 
+        generateSaveButtons();
+        generateSaveSelector();
+
         closeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -218,6 +237,27 @@ public class CarparkScreen implements Screen {
             }
         });
 
+        // Add save and load save functionality
+        for (int i = 0; i < 3; i++) {
+            int index = i;
+            saveOptionButtons.get(i).addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    gameScreen.saveGame(index + 1);
+                    show();
+                }
+            });
+            saveTextButtons.get(i).addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (gameScreen.getSaveControls().checkIfSaveEmpty(index)) {
+                        // TODO Add save game load function
+                    }
+                    show();
+                }
+            });
+        }
+
         for (int i = 0; i< firestation.getParkedFireTrucks().size(); i++) {
             int index = i;
             Firetruck selectedTruck = firestation.getParkedFireTrucks().get(i);
@@ -229,7 +269,6 @@ public class CarparkScreen implements Screen {
                         if (boughtTruck(selectedTruck)){
                             firestation.changeFiretruck(index);
                         }
-                        gameScreen.saveGame();
                         show();
                     }
                 });
@@ -405,6 +444,62 @@ public class CarparkScreen implements Screen {
             selectLocationLabels.add(title);
             selectImageButtons.add(imageButton);
             selectTextButtons.add(textButton);
+        }
+    }
+
+    /**
+     * Builds each save file item which contains:
+     * - save option button (save or overwrite)
+     * - text button (empty or load)
+     */
+    private void generateSaveButtons() {
+        saveOptionButtons.clear();
+        saveTextButtons.clear();
+        for (int i=1; i <= 3; i++) {
+            boolean emptySave = this.gameScreen.getSaveControls().checkIfSaveEmpty(i);
+
+            TextButton optionButton = new TextButton("", skin);
+            TextButton textButton = new TextButton("", skin);
+
+            if (emptySave) {
+                textButton.setText("Empty Save");
+                optionButton.setText("Save Game");
+                textButton.setColor(Color.DARK_GRAY);
+                optionButton.setColor(Color.GREEN);
+            } else {
+                textButton.setText("Load Save " + i);
+                optionButton.setText("  Overwrite  ");
+                textButton.setColor(Color.GREEN);
+                optionButton.setColor(Color.RED);
+            }
+            optionButton.setSize(175,40);
+            textButton.setSize(175,40);
+            saveOptionButtons.add(optionButton);
+            saveTextButtons.add(textButton);
+        }
+    }
+
+    /**
+     * Builds the save selector section of the screen
+     * it is called once the screen is opened
+     */
+    private void generateSaveSelector() {
+        saveGroup.clear();
+        saveGroup.pad(20);
+        saveGroup.expand();
+        saveGroup.left();
+        saveGroup.space(15);
+        for (int i=0; i <= 2; i++) {
+            Stack stack = new Stack();
+            VerticalGroup vgSave = new VerticalGroup();
+            vgSave.center();
+            vgSave.pad(5);
+            vgSave.addActor(saveTextButtons.get(i));
+            vgSave.space(5);
+            vgSave.addActor(saveOptionButtons.get(i));
+            stack.addActor(new BackgroundBox(200, 100, Color.GRAY, 10));
+            stack.addActor(vgSave);
+            saveGroup.addActor(stack);
         }
     }
 

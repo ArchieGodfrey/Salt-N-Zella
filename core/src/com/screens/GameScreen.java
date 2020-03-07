@@ -522,8 +522,20 @@ public class GameScreen implements Screen {
 		}
 	}
 
-	public void saveGame() {
-		this.saveControls.saveGame(2, this.getActiveTruck(), this.firestation);
+	/**
+	 * Save the game into a given save file
+	 * @param saveNumber The number of the save file to store the game in
+	 */
+	public void saveGame(int saveNumber) {
+		this.saveControls.saveGame(saveNumber, this.getActiveTruck(), this.firestation);
+	}
+
+	/**
+	 * Getter for the game screen save controls
+	 * @return	The save controls object
+	 */
+	public SaveControls getSaveControls() {
+		return this.saveControls;
 	}
 
 	/*

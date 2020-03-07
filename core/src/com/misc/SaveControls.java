@@ -163,6 +163,21 @@ public class SaveControls {
     }
 
     /**
+     * Checks if a save file contains any data
+     * @param saveNumber The save number to check
+     * @return Whether the save file is empty (true) or not (false)
+     */
+    public boolean checkIfSaveEmpty(int saveNumber) {
+        SaveFile toBeChecked;
+        try {
+            toBeChecked = readSaveFromFile(saveNumber);
+        } catch (IOException e) {
+            toBeChecked = new SaveFile();
+        }
+        return toBeChecked.empty;
+    }
+
+    /**
      * Gets a saved firetruck given its type
      * @param type  The type of firetruck to retrieve
      * @return      The saved firetruck

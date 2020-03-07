@@ -51,4 +51,10 @@ public class SaveControlsTest {
     public void getCurrentSaveNumberTest() {
         assertEquals(this.saveControls.getSavedFiretruck(Constants.TruckType.RED), 0);
     }
+
+    @Test
+    public void checkIfSaveEmptyTest() {
+        this.saveControls.saveGame(4, firetruck, firestation);
+        assertEquals(this.saveControls.checkIfSaveEmpty(4), false);
+    }
 }
