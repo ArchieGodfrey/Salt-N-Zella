@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.misc.SaveControls;
 import com.screens.MainMenuScreen;
 
 /**
@@ -29,6 +30,7 @@ public class Kroy extends Game {
 	public BitmapFont coolFont;
 	private Label.LabelStyle font10;
 	private Skin skin;
+	private SaveControls saveControls;
 
 	/**
 	 * Display the main menu screen upon game start.
@@ -36,7 +38,7 @@ public class Kroy extends Game {
 	public void create() {
 		//Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
-
+		this.saveControls = new SaveControls();
 		this.setFonts();
 		this.spriteBatch = new SpriteBatch();
 		this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"), new TextureAtlas("skin/uiskin.atlas"));
@@ -69,6 +71,19 @@ public class Kroy extends Game {
 	 */
 	public void setBatch(Batch batch) {
 		this.batch = batch;
+	}
+
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
+	 * Getter for the game screen save controls
+	 * @return	The save controls object
+	 */
+	public SaveControls getSaveControls() {
+		return this.saveControls;
 	}
 
 	/*

@@ -79,18 +79,13 @@ public class SaveControls {
     }
 
     /**
-     * Creates a new Gson instance and attempts to load a save file. If it fails to open/find
-     * a save file it defaults to the normal game
+     * Creates a new Gson instance and creates a fresh save file
+     * setting the current save to 0
      */
     public SaveControls() {
         this.gson = new Gson();
-        try {
-            this.currentSaveFile = readSaveFromFile(2);
-            this.currentSaveNumber = 2;
-        } catch (IOException e) {
-            this.currentSaveFile = new SaveFile();
-            this.currentSaveNumber = 0;
-        }
+        this.currentSaveFile = new SaveFile();
+        this.currentSaveNumber = 0;
     }
 
     /**
@@ -146,11 +141,18 @@ public class SaveControls {
     }
 
     /**
-     * Set which file to load the saved data from
+     * Attempts to load a save file. If it fails to open/find
+     * a save file it defaults to a new save file
      * @param saveNumber The index of the save file to load
      */
-    public void setLoadFromSave(int saveNumber) {
-        this.currentSaveNumber = saveNumber;
+    public void loadFromSave(int saveNumber) {
+        try {
+            this.currentSaveFile = readSaveFromFile(saveNumber);
+            this.currentSaveNumber = saveNumber;
+        } catch (IOException e) {
+            this.currentSaveFile = new SaveFile();
+            this.currentSaveNumber = 0;
+        }
     }
 
     /**

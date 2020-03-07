@@ -56,7 +56,6 @@ public class GameScreen implements Screen {
 
 	// A constant variable to store the game
 	final Kroy game;
-	private SaveControls saveControls;
 
 	// Private values for rendering
 	private final ShapeRenderer shapeRenderer;
@@ -113,13 +112,11 @@ public class GameScreen implements Screen {
 	 * contained.
 	 *
 	 * @param game The game object.
+	 * @param isTutorial Whether the game should show the tutorial or not
 	 */
-	public GameScreen(final Kroy game) {
+	public GameScreen(final Kroy game, boolean isTutorial) {
 		// Assign the game to a property so it can be used when transitioning screens
 		this.game = game;
-
-		this.saveControls = new SaveControls();
-		this.score= 200;
 
 		// ---- 1) Create new instance for all the objects needed for the game ---- //
 
@@ -296,8 +293,9 @@ public class GameScreen implements Screen {
 			}
 		}, 7,10);
 
+		// Update the tutotial mode
 		isInTutorial = true;
-
+		if (!isTutorial) this.finishTutorial();
 	}
 
 	/**
@@ -522,20 +520,30 @@ public class GameScreen implements Screen {
 		}
 	}
 
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
 	/**
 	 * Save the game into a given save file
 	 * @param saveNumber The number of the save file to store the game in
 	 */
 	public void saveGame(int saveNumber) {
-		this.saveControls.saveGame(saveNumber, this.getActiveTruck(), this.firestation);
+		this.game.getSaveControls().saveGame(saveNumber, this.getActiveTruck(), this.firestation);
 	}
 
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
 	/**
 	 * Getter for the game screen save controls
 	 * @return	The save controls object
 	 */
 	public SaveControls getSaveControls() {
-		return this.saveControls;
+		return this.game.getSaveControls();
 	}
 
 	/*
@@ -718,7 +726,7 @@ public class GameScreen implements Screen {
 		ArrayList<Texture> truckTextures = this.buildFiretuckTextures(type.getColourString());
 		Firetruck firetruck = new Firetruck(truckTextures, this.waterFrames, type,
 				(TiledMapTileLayer) map.getLayers().get("Collision"), (TiledMapTileLayer) map.getLayers().get("Carpark"),
-				this.firestation, isActive, this.saveControls);
+				this.firestation, isActive, this.game.getSaveControls());
 		if (isActive) {
 			if (this.firestation.getActiveFireTruck() == null) {
 				this.firestation.setActiveFireTruck(firetruck);

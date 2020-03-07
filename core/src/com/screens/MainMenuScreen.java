@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -121,12 +122,46 @@ public class MainMenuScreen implements Screen {
 		TextButton howToPlayButton = new TextButton("How to Play", skin);
 		TextButton quitButton = new TextButton("Quit", skin);
 
+		/*
+		*  =======================================================================
+		*       	Modified for Assessment 4		@author Archie Godfrey
+		*  =======================================================================
+		*		Added save file load buttons to menu and listeners for each
+		*/
+		TextButton loadButton = new TextButton("Load", skin);
+		loadButton.center().pad(10, 7, 10, 7).setTouchable(Touchable.disabled);
+		TextButton oneButton = new TextButton("1", skin);
+		boolean saveOneEmpty = game.getSaveControls().checkIfSaveEmpty(1);
+		oneButton.center().pad(10, 12, 10, 16).setTouchable(saveOneEmpty ? Touchable.disabled : Touchable.enabled);
+		oneButton.setColor(saveOneEmpty ? Color.DARK_GRAY : Color.GREEN);
+		TextButton twoButton = new TextButton("2", skin);
+		boolean saveTwoEmpty = game.getSaveControls().checkIfSaveEmpty(2);
+		twoButton.center().pad(10, 13, 10, 15).setTouchable(saveTwoEmpty ? Touchable.disabled : Touchable.enabled);
+		twoButton.setColor(saveTwoEmpty ? Color.DARK_GRAY : Color.GREEN);
+		TextButton threeButton = new TextButton("3", skin);
+		boolean saveThreeEmpty = game.getSaveControls().checkIfSaveEmpty(3);
+		threeButton.center().pad(10, 14, 10, 14).setTouchable(saveThreeEmpty ? Touchable.disabled : Touchable.enabled);
+		threeButton.setColor(saveThreeEmpty ? Color.DARK_GRAY : Color.GREEN);
+
+		// Create load vertical group
+		HorizontalGroup loadGroup = new HorizontalGroup();
+		loadGroup.center();
+		loadGroup.addActor(loadButton);
+		loadGroup.space(10);
+		loadGroup.addActor(oneButton);
+		loadGroup.space(10);
+		loadGroup.addActor(twoButton);
+		loadGroup.space(10);
+		loadGroup.addActor(threeButton);
+
 		// Add buttons to table and style them
 		buttonTable.add(heading).padBottom(10);
 		buttonTable.row();
-		buttonTable.add(subHeading).padBottom(20);
+		buttonTable.add(subHeading).padBottom(15);
 		buttonTable.row();
 		buttonTable.add(playButton).padBottom(20).width(200).height(40);
+		buttonTable.row();
+		buttonTable.add(loadGroup).padBottom(20).width(200).height(40);
 		buttonTable.row();
 		buttonTable.add(howToPlayButton).padBottom(20).width(200).height(40);
 		buttonTable.row();
@@ -138,6 +173,34 @@ public class MainMenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				SFX.sfx_button_click.play();
 				game.setScreen(new StoryScreen(game));
+				dispose();
+			}
+		});
+
+		oneButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				SFX.sfx_button_click.play();
+				game.getSaveControls().loadFromSave(1);
+				game.setScreen(new GameScreen(game, false));
+				dispose();
+			}
+		});
+		twoButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				SFX.sfx_button_click.play();
+				game.getSaveControls().loadFromSave(2);
+				game.setScreen(new GameScreen(game, false));
+				dispose();
+			}
+		});
+		threeButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				SFX.sfx_button_click.play();
+				game.getSaveControls().loadFromSave(3);
+				game.setScreen(new GameScreen(game, false));
 				dispose();
 			}
 		});

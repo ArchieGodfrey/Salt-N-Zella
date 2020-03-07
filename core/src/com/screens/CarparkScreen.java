@@ -103,7 +103,7 @@ public class CarparkScreen implements Screen {
 
         // create tables
         Table mainTable = new Table(); // stores everything in
-        Table saveAndPreviewTale = new Table(); // stores the save files and preview screen
+        Table saveAndPreviewTable = new Table(); // stores the save files and preview screen
         Table previewGroup = new Table(); // stores the active truck image and stats table
 
         HorizontalGroup header = new HorizontalGroup();
@@ -157,9 +157,9 @@ public class CarparkScreen implements Screen {
         // then combine then into one table and add that to the main table
         saveStack.add(saveGroup);
         previewStack.add(previewGroup);
-        saveAndPreviewTale.add(saveStack);
-        saveAndPreviewTale.add(previewStack);
-        mainTable.add(saveAndPreviewTale);
+        saveAndPreviewTable.add(saveStack);
+        saveAndPreviewTable.add(previewStack);
+        mainTable.add(saveAndPreviewTable);
 
         // TRUCK SELECTOR
 
