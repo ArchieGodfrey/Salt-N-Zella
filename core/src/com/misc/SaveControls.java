@@ -42,6 +42,10 @@ public class SaveControls {
     public class SaveFile {
         // Whether the file is empty or not
         public boolean empty;
+        // The saved game score
+        public int score;
+        // The saved time
+        public int time;
         // The firetrucks stored in the save file
         public ArrayList<SavedFiretruck> firetrucks;
 
@@ -50,9 +54,11 @@ public class SaveControls {
             this.empty = true;
         };
         // Overloaded constructor, creates a full save file
-        public SaveFile(ArrayList<SavedFiretruck> firetrucks) {
+        public SaveFile(int score, int time, ArrayList<SavedFiretruck> firetrucks) {
             this.firetrucks = firetrucks;
             this.empty = false;
+            this.score = score;
+            this.time = time;
         }
     }
 
@@ -97,7 +103,7 @@ public class SaveControls {
      * @param activeTruck   The active firetruck to be converted
      * @param firestation   The firestation to be converted
      */
-    public void saveGame(int saveNumber, Firetruck activeTruck, Firestation firestation/* , ArrayList<ETFortress> ETFortresses */) {
+    public void saveGame(int saveNumber, int score, int time, Firetruck activeTruck, Firestation firestation/* , ArrayList<ETFortress> ETFortresses */) {
         // Create an array to store all trucks to be saved
         ArrayList<SavedFiretruck> savedFiretrucks = new ArrayList<SavedFiretruck>();
         // Add the active truck to the list
@@ -115,7 +121,7 @@ public class SaveControls {
         ));
         }
         // Create a new save file
-        SaveFile saveFile = new SaveFile(savedFiretrucks);
+        SaveFile saveFile = new SaveFile(score, time, savedFiretrucks);
         // Write the save file object to a JSON file
         writeSaveToFile(saveNumber, saveFile);
     }
@@ -176,6 +182,14 @@ public class SaveControls {
     }
 
     /**
+     * Sets the index of the save file currently used.
+     * @param saveNumber The index of the save file currently loaded
+     */
+    public void setCurrentSaveNumber(int saveNumber) {
+        this.currentSaveNumber = saveNumber;
+    }
+
+    /**
      * Checks if a save file contains any data
      * @param saveNumber The save number to check
      * @return Whether the save file is empty (true) or not (false)
@@ -188,6 +202,14 @@ public class SaveControls {
             toBeChecked = new SaveFile();
         }
         return toBeChecked.empty;
+    }
+
+    /**
+     * Gets the current loaded save file
+     * @return      The current savefile
+     */
+    public SaveFile getSaveFile() {
+        return this.currentSaveFile;
     }
 
     /**

@@ -172,6 +172,7 @@ public class MainMenuScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				SFX.sfx_button_click.play();
+				game.getSaveControls().setCurrentSaveNumber(0);
 				game.setScreen(new StoryScreen(game));
 				dispose();
 			}

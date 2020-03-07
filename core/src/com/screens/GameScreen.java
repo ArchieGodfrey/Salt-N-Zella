@@ -530,7 +530,13 @@ public class GameScreen implements Screen {
 	 * @param saveNumber The number of the save file to store the game in
 	 */
 	public void saveGame(int saveNumber) {
-		this.game.getSaveControls().saveGame(saveNumber, this.getActiveTruck(), this.firestation);
+		this.game.getSaveControls().saveGame(
+			saveNumber,
+			this.score,
+			this.time,
+			this.getActiveTruck(),
+			this.firestation
+		);
 	}
 
 	/*
@@ -1196,6 +1202,9 @@ public class GameScreen implements Screen {
 				firestation.getActiveFireTruck().setRespawnLocation(0);
 				firestation.getActiveFireTruck().respawn();
 				firestation.getActiveFireTruck().setHose(false);
+			} else {
+				this.time = this.game.getSaveControls().getSaveFile().time;
+				this.score = this.game.getSaveControls().getSaveFile().score;
 			}
 			this.ETPatrols.clear();
 			this.camera.zoom = 1.3f;
