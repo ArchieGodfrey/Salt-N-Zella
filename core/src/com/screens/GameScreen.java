@@ -535,7 +535,8 @@ public class GameScreen implements Screen {
 			this.score,
 			this.time,
 			this.getActiveTruck(),
-			this.firestation
+			this.firestation,
+			this.ETFortresses
 		);
 	}
 

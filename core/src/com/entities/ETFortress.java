@@ -53,6 +53,14 @@ public class ETFortress extends SimpleSprite {
         this.setSize(ETFORTRESS_WIDTH * this.getScaleX(), ETFORTRESS_HEIGHT * this.getScaleY());
         this.getHealthBar().setMaxResource(type.getHealth());
         super.resetRotation(90);
+
+        // If loading from a save file
+        if (gameScreen.getSaveControls().getCurrentSaveNumber() != 0) {
+            this.getHealthBar().setCurrentAmount(gameScreen.getSaveControls().getSavedFortress(type).health);
+            if (gameScreen.getSaveControls().getSavedFortress(type).flooded) {
+                this.removeSprite(this.destroyed);
+            }
+        }
     }
 
     /**

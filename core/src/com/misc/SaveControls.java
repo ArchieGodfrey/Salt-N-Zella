@@ -48,23 +48,26 @@ public class SaveControls {
         public int time;
         // The firetrucks stored in the save file
         public ArrayList<SavedFiretruck> firetrucks;
+        // The ETFortresses stored in the save file
+        public ArrayList<SavedFortress> ETFortresses;
 
         // Default constructor, creates an empty save file
         public SaveFile() {
             this.empty = true;
         };
         // Overloaded constructor, creates a full save file
-        public SaveFile(int score, int time, ArrayList<SavedFiretruck> firetrucks) {
+        public SaveFile(int score, int time, ArrayList<SavedFiretruck> firetrucks, ArrayList<SavedFortress> ETFortresses) {
             this.firetrucks = firetrucks;
             this.empty = false;
             this.score = score;
             this.time = time;
+            this.ETFortresses = ETFortresses;
         }
     }
 
     /** 
      * A 'barebones' Firetruck class to only store the
-    *  properties needed to re-create the class
+     * properties needed to re-create the class
     **/
     public class SavedFiretruck {
         // The idetifier of the truck
@@ -76,7 +79,7 @@ public class SaveControls {
         // The saved respawn location
         public Constants.CarparkEntrances respawnLocation;
 
-        // Default constructor, creates an empty save file
+        // Default constructor, creates an empty firetruck save
         public SavedFiretruck() {};
         // Overloaded constructor, creates a full firetruck save
         public SavedFiretruck(Constants.TruckType type, int health, int water, Constants.CarparkEntrances respawnLocation) {
@@ -84,6 +87,28 @@ public class SaveControls {
             this.water = water;
             this.respawnLocation = respawnLocation;
             this.type = type;
+        }
+    }
+
+    /** 
+     * A 'barebones' ETFortress class to only store the
+     * properties needed to re-create the class
+    **/
+    public class SavedFortress {
+        // The idetifier of the truck
+        public Constants.FortressType type;
+        // The saved health
+        public int health;
+        // If the fortress is flooded
+        public boolean flooded;
+
+        // Default constructor, creates an empty fortress save
+        public SavedFortress() {};
+        // Overloaded constructor, creates a full fortress save
+        public SavedFortress(Constants.FortressType type, int health, boolean flooded) {
+            this.health = health;
+            this.type = type;
+            this.flooded = flooded;
         }
     }
 
@@ -98,12 +123,14 @@ public class SaveControls {
     }
 
     /**
-     * The one function to save the entire game in a selected filed.
+     * The one function to save the entire game in a selected file.
      * @param saveNumber    The number of the save file to store the JSON in
+     * @param score         The game score to be converted
+     * @param time          The game time to be converted
      * @param activeTruck   The active firetruck to be converted
      * @param firestation   The firestation to be converted
      */
-    public void saveGame(int saveNumber, int score, int time, Firetruck activeTruck, Firestation firestation/* , ArrayList<ETFortress> ETFortresses */) {
+    public void saveGame(int saveNumber, int score, int time, Firetruck activeTruck, Firestation firestation, ArrayList<ETFortress> ETFortresses) {
         // Create an array to store all trucks to be saved
         ArrayList<SavedFiretruck> savedFiretrucks = new ArrayList<SavedFiretruck>();
         // Add the active truck to the list
@@ -114,14 +141,25 @@ public class SaveControls {
         ));
         // Add the remaining trucks to the list
         for (Firetruck firetruck : firestation.getParkedFireTrucks()) {
-            savedFiretrucks.add(new SavedFiretruck(firetruck.getType(),
-            firetruck.getHealthBar().getCurrentAmount(),
-            firetruck.getWaterBar().getCurrentAmount(),
-            firetruck.getCarpark()
-        ));
+            savedFiretrucks.add(new SavedFiretruck(
+                firetruck.getType(),
+                firetruck.getHealthBar().getCurrentAmount(),
+                firetruck.getWaterBar().getCurrentAmount(),
+                firetruck.getCarpark()
+            ));
+        }
+        // Create an array to store all ETFortresses to be saved
+        ArrayList<SavedFortress> savedFortresses = new ArrayList<SavedFortress>();
+        // Add the fortresses to the list
+        for (ETFortress ETFortress : ETFortresses) {
+            savedFortresses.add(new SavedFortress(
+                ETFortress.getType(),
+                ETFortress.getHealthBar().getCurrentAmount(),
+                ETFortress.isFlooded()
+            ));
         }
         // Create a new save file
-        SaveFile saveFile = new SaveFile(score, time, savedFiretrucks);
+        SaveFile saveFile = new SaveFile(score, time, savedFiretrucks, savedFortresses);
         // Write the save file object to a JSON file
         writeSaveToFile(saveNumber, saveFile);
     }
@@ -224,5 +262,19 @@ public class SaveControls {
             }
         }
         return this.currentSaveFile.firetrucks.get(0);
+    }
+
+    /**
+     * Gets a saved fortress given its type
+     * @param type  The type of fortress to retrieve
+     * @return      The saved fortress
+     */
+    public SavedFortress getSavedFortress(Constants.FortressType type) {
+        for (SavedFortress ETFortress : this.currentSaveFile.ETFortresses) {
+            if (ETFortress.type == type) {
+                return ETFortress;
+            }
+        }
+        return this.currentSaveFile.ETFortresses.get(0);
     }
 }
