@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.misc.SaveControls;
+import com.screens.GameScreen;
 import com.screens.MainMenuScreen;
 
 /**
@@ -127,5 +128,19 @@ public class Kroy extends Game {
 	 */
 	public Skin getSkin() {
 		return this.skin;
+	}
+
+	/*
+	 *  =======================================================================
+	 *           Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
+	 * Load a game from a save file
+	 * @param saveNumber The number of the save file to load
+	 */
+	public void loadGameFromSave(int saveNumber) {
+		this.saveControls.loadFromSave(saveNumber);
+		this.setScreen(new GameScreen(this, false));
 	}
 }

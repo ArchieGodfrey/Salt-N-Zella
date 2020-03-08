@@ -129,6 +129,7 @@ public class SaveControls {
      * @param time          The game time to be converted
      * @param activeTruck   The active firetruck to be converted
      * @param firestation   The firestation to be converted
+     * @param ETFortresses  The ETFortresses to be converted
      */
     public void saveGame(int saveNumber, int score, int time, Firetruck activeTruck, Firestation firestation, ArrayList<ETFortress> ETFortresses) {
         // Create an array to store all trucks to be saved

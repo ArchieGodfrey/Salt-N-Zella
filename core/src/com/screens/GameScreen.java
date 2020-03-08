@@ -555,6 +555,19 @@ public class GameScreen implements Screen {
 
 	/*
 	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
+	 * Checks if the game is in the tutorial
+	 * @return	Whether the game is in the tutorial (true) or not (false)
+	 */
+	public boolean isInTutorial() {
+		return this.isInTutorial;
+	}
+
+	/*
+	 *  =======================================================================
 	 *                          Added for Assessment 3
 	 *  =======================================================================
 	 */

@@ -215,9 +215,6 @@ public class CarparkScreen implements Screen {
         generateTruckButtons();
         generateTruckSelector();
 
-        generateSaveButtons();
-        generateSaveSelector();
-
         closeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -237,32 +234,37 @@ public class CarparkScreen implements Screen {
             }
         });
 
-        // Add save and load save functionality
-        for (int i = 0; i < 3; i++) {
-            int index = i;
-            saveOptionButtons.get(i).addListener(new ClickListener(){
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    gameScreen.saveGame(index + 1);
-                    show();
-                }
-            });
-            saveTextButtons.get(i).addListener(new ClickListener(){
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (gameScreen.getSaveControls().checkIfSaveEmpty(index)) {
-                        // TODO Add save game load function
+        // Only allow saves when in the main game
+        if (!this.gameScreen.isInTutorial()) {
+            // Create save buttons
+            generateSaveButtons();
+            generateSaveSelector();
+            // Add save and load save functionality
+            for (int i = 0; i < 3; i++) {
+                int index = i;
+                saveOptionButtons.get(i).addListener(new ClickListener(){
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        gameScreen.saveGame(index + 1);
+                        show();
                     }
-                    show();
-                }
-            });
+                });
+                saveTextButtons.get(i).addListener(new ClickListener(){
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        if (gameScreen.getSaveControls().checkIfSaveEmpty(index)) {
+                            game.loadGameFromSave(index + 1);
+                        }
+                        show();
+                    }
+                });
+            }
         }
 
         for (int i = 0; i< firestation.getParkedFireTrucks().size(); i++) {
             int index = i;
             Firetruck selectedTruck = firestation.getParkedFireTrucks().get(i);
             if (!firestation.getParkedFireTrucks().get(i).isBought()){
-
                 selectTextButtons.get(i).addListener(new ClickListener(){
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
