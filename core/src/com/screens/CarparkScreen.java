@@ -241,20 +241,21 @@ public class CarparkScreen implements Screen {
             generateSaveSelector();
             // Add save and load save functionality
             for (int i = 0; i < 3; i++) {
-                int index = i;
+                int index = i + 1;
                 saveOptionButtons.get(i).addListener(new ClickListener(){
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        gameScreen.saveGame(index + 1);
+                        gameScreen.saveGame(index);
+                        if (gameScreen.getSaveControls().getCurrentSaveNumber() != index) {
+                            game.getSaveControls().setCurrentSaveNumber(index);
+                        }
                         show();
                     }
                 });
                 saveTextButtons.get(i).addListener(new ClickListener(){
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        if (gameScreen.getSaveControls().checkIfSaveEmpty(index)) {
-                            game.loadGameFromSave(index + 1);
-                        }
+                        game.loadGameFromSave(index);
                         show();
                     }
                 });
@@ -462,17 +463,21 @@ public class CarparkScreen implements Screen {
 
             TextButton optionButton = new TextButton("", skin);
             TextButton textButton = new TextButton("", skin);
+            optionButton.setText("  Save Game  ");
+            optionButton.setColor(Color.GREEN);
 
             if (emptySave) {
-                textButton.setText("Empty Save");
-                optionButton.setText("Save Game");
+                textButton.setText("  Empty Save  ");
                 textButton.setColor(Color.DARK_GRAY);
-                optionButton.setColor(Color.GREEN);
             } else {
-                textButton.setText("Load Save " + i);
-                optionButton.setText("  Overwrite  ");
-                textButton.setColor(Color.GREEN);
-                optionButton.setColor(Color.RED);
+                if (this.gameScreen.getSaveControls().getCurrentSaveNumber() == i) {
+                    textButton.setText("Current Save");
+                    textButton.setTouchable(Touchable.disabled);
+                } else {
+                    textButton.setText(" Load Save " + i + " ");
+                    optionButton.setText("   Overwrite   ");
+                    optionButton.setColor(Color.RED);
+                }
             }
             optionButton.setSize(175,40);
             textButton.setSize(175,40);
