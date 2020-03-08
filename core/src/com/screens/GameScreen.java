@@ -534,7 +534,6 @@ public class GameScreen implements Screen {
 			saveNumber,
 			this.score,
 			this.time,
-			this.getActiveTruck(),
 			this.firestation,
 			this.ETFortresses
 		);
@@ -1219,6 +1218,10 @@ public class GameScreen implements Screen {
 			} else {
 				this.time = this.game.getSaveControls().getSaveFile().time;
 				this.score = this.game.getSaveControls().getSaveFile().score;
+				this.firestation.parkFireTruck(this.getActiveTruck());
+				this.firestation.setActiveFireTruck(
+					this.firestation.getFiretruckByType(this.game.getSaveControls().getSaveFile().activeFireTruckType)
+				);
 			}
 			this.ETPatrols.clear();
 			this.camera.zoom = 1.3f;

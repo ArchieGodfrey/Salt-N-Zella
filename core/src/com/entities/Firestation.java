@@ -4,6 +4,7 @@ package com.entities;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.misc.Constants;
 import com.badlogic.gdx.graphics.Texture;
 
 // Custom class import
@@ -60,6 +61,11 @@ public class Firestation extends SimpleSprite {
         this.isDestroyed = false;
         this.isVulnerable = false;
         super.resetRotation(90);
+
+        // If loading from a save file
+        if (gameScreen.getSaveControls().getCurrentSaveNumber() != 0) {
+            this.getHealthBar().setCurrentAmount(gameScreen.getSaveControls().getSaveFile().firestationHealth);  
+        }
     }
 
     /**
@@ -245,6 +251,28 @@ public class Firestation extends SimpleSprite {
         parkedFireTrucks.remove(index);
         parkedFireTrucks.add(index, previous);
     }
+
+    /*
+     *  =======================================================================
+     *          Added for Assessment 4      @author Archie Godfrey
+     *  =======================================================================
+     */
+    /**
+     * Gets a firetruck from the parked firetrucks given it's type. Also removes it from
+     * the parked firetrucks
+     * @param type  The type of truck to return
+     * @return      The firetruck of the given type
+     */
+    public Firetruck getFiretruckByType(Constants.TruckType type) {
+        Firetruck firetruckToRemove = this.getParkedFireTrucks().get(0);
+		for (Firetruck firetruck : this.getParkedFireTrucks()) {
+			if (firetruck.getType() == type) {
+                firetruckToRemove = firetruck;
+			}
+        }
+        this.getParkedFireTrucks().remove(firetruckToRemove);
+        return firetruckToRemove;
+	}
 
     public void setActiveFireTruck(Firetruck fireTruck) {
         this.activeFireTruck = fireTruck;

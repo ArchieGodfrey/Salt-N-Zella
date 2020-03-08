@@ -46,6 +46,10 @@ public class SaveControls {
         public int score;
         // The saved time
         public int time;
+        // The saved firestation health
+        public int firestationHealth;
+        // The saved active firetruck type
+        public Constants.TruckType activeFireTruckType;
         // The firetrucks stored in the save file
         public ArrayList<SavedFiretruck> firetrucks;
         // The ETFortresses stored in the save file
@@ -56,12 +60,14 @@ public class SaveControls {
             this.empty = true;
         };
         // Overloaded constructor, creates a full save file
-        public SaveFile(int score, int time, ArrayList<SavedFiretruck> firetrucks, ArrayList<SavedFortress> ETFortresses) {
+        public SaveFile(int score, int time, int firestationHealth, Constants.TruckType activeFireTruckType, ArrayList<SavedFiretruck> firetrucks, ArrayList<SavedFortress> ETFortresses) {
             this.firetrucks = firetrucks;
             this.empty = false;
             this.score = score;
             this.time = time;
+            this.activeFireTruckType = activeFireTruckType;
             this.ETFortresses = ETFortresses;
+            this.firestationHealth = firestationHealth;
         }
     }
 
@@ -78,15 +84,18 @@ public class SaveControls {
         public int water;
         // The saved respawn location
         public Constants.CarparkEntrances respawnLocation;
+        // If the truck has been purchased
+        public boolean isBought;
 
         // Default constructor, creates an empty firetruck save
         public SavedFiretruck() {};
         // Overloaded constructor, creates a full firetruck save
-        public SavedFiretruck(Constants.TruckType type, int health, int water, Constants.CarparkEntrances respawnLocation) {
+        public SavedFiretruck(Constants.TruckType type, int health, int water, Constants.CarparkEntrances respawnLocation, boolean isBought) {
             this.health = health;
             this.water = water;
             this.respawnLocation = respawnLocation;
             this.type = type;
+            this.isBought = isBought;
         }
     }
 
@@ -131,14 +140,17 @@ public class SaveControls {
      * @param firestation   The firestation to be converted
      * @param ETFortresses  The ETFortresses to be converted
      */
-    public void saveGame(int saveNumber, int score, int time, Firetruck activeTruck, Firestation firestation, ArrayList<ETFortress> ETFortresses) {
+    public void saveGame(int saveNumber, int score, int time, Firestation firestation, ArrayList<ETFortress> ETFortresses) {
         // Create an array to store all trucks to be saved
         ArrayList<SavedFiretruck> savedFiretrucks = new ArrayList<SavedFiretruck>();
+        // Gets the active truck
+        Firetruck activeTruck = firestation.getActiveFireTruck();
         // Add the active truck to the list
         savedFiretrucks.add(new SavedFiretruck(activeTruck.getType(),
             activeTruck.getHealthBar().getCurrentAmount(),
             activeTruck.getWaterBar().getCurrentAmount(),
-            activeTruck.getCarpark()
+            activeTruck.getCarpark(),
+            activeTruck.isBought()
         ));
         // Add the remaining trucks to the list
         for (Firetruck firetruck : firestation.getParkedFireTrucks()) {
@@ -146,7 +158,8 @@ public class SaveControls {
                 firetruck.getType(),
                 firetruck.getHealthBar().getCurrentAmount(),
                 firetruck.getWaterBar().getCurrentAmount(),
-                firetruck.getCarpark()
+                firetruck.getCarpark(),
+                firetruck.isBought()
             ));
         }
         // Create an array to store all ETFortresses to be saved
@@ -160,7 +173,12 @@ public class SaveControls {
             ));
         }
         // Create a new save file
-        SaveFile saveFile = new SaveFile(score, time, savedFiretrucks, savedFortresses);
+        SaveFile saveFile = new SaveFile(
+            score, time,
+            firestation.getHealthBar().getCurrentAmount(),
+            activeTruck.getType(),
+            savedFiretrucks, savedFortresses
+        );
         // Write the save file object to a JSON file
         writeSaveToFile(saveNumber, saveFile);
     }

@@ -93,6 +93,7 @@ public class Firetruck extends MovementSprite {
         if (saveControls.getCurrentSaveNumber() != 0) {
             this.getHealthBar().setCurrentAmount(saveControls.getSavedFiretruck(type).health);
             this.waterBar.setCurrentAmount(saveControls.getSavedFiretruck(type).water);
+            this.isBought = saveControls.getSavedFiretruck(type).isBought;
             this.location = saveControls.getSavedFiretruck(type).respawnLocation;
             this.respawn();           
         }

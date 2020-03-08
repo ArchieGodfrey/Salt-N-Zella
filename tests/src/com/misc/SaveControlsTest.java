@@ -1,13 +1,11 @@
 package com.misc;
 
-import com.misc.SaveControls.SavedFiretruck;
 import com.testrunner.GdxTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import com.entities.*;
-import com.misc.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,9 +28,6 @@ public class SaveControlsTest {
     @Mock
     ArrayList<ETFortress> ETFortresses;
 
-    @Mock
-    Firetruck firetruck;
-
     @Before
     public void setUp() {
         this.saveControls = new SaveControls();
@@ -40,7 +35,7 @@ public class SaveControlsTest {
 
     @Test
     public void saveGameTest() {
-        this.saveControls.saveGame(1, 100, 100, firetruck, firestation, ETFortresses);
+        this.saveControls.saveGame(1, 100, 100, firestation, ETFortresses);
         try {
             Path paths = Paths.get("Save1.json");
             Reader reader = Files.newBufferedReader(paths);
@@ -59,19 +54,19 @@ public class SaveControlsTest {
     @Test
     public void checkIfSaveEmptyTest() {
         assertEquals(this.saveControls.checkIfSaveEmpty(4), true);
-        this.saveControls.saveGame(4, 100, 100, firetruck, firestation, ETFortresses);
+        this.saveControls.saveGame(4, 100, 100, firestation, ETFortresses);
         assertEquals(this.saveControls.checkIfSaveEmpty(4), false);
     }
 
     @Test
     public void getSavedFiretruckTest() {
-        this.saveControls.saveGame(4, 100, 100, firetruck, firestation, ETFortresses);
+        this.saveControls.saveGame(4, 100, 100, firestation, ETFortresses);
         assertNotNull(this.saveControls.getSavedFiretruck(Constants.TruckType.RED));
     }
 
     @Test
     public void getSavedFortressTest() {
-        this.saveControls.saveGame(4, 100, 100, firetruck, firestation, ETFortresses);
+        this.saveControls.saveGame(4, 100, 100, firestation, ETFortresses);
         assertNotNull(this.saveControls.getSavedFortress(Constants.FortressType.CASTLE1));
     }
 }
