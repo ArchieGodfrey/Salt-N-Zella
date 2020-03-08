@@ -10,6 +10,7 @@ import com.entities.*;
 import com.misc.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -27,6 +28,9 @@ public class SaveControlsTest {
     Firestation firestation;
 
     @Mock
+    ArrayList<ETFortress> ETFortresses;
+
+    @Mock
     Firetruck firetruck;
 
     @Before
@@ -36,7 +40,7 @@ public class SaveControlsTest {
 
     @Test
     public void saveGameTest() {
-        this.saveControls.saveGame(1, firetruck, firestation);
+        this.saveControls.saveGame(1, 100, 100, firetruck, firestation, ETFortresses);
         try {
             Path paths = Paths.get("Save1.json");
             Reader reader = Files.newBufferedReader(paths);
@@ -54,7 +58,20 @@ public class SaveControlsTest {
 
     @Test
     public void checkIfSaveEmptyTest() {
-        this.saveControls.saveGame(4, firetruck, firestation);
+        assertEquals(this.saveControls.checkIfSaveEmpty(4), true);
+        this.saveControls.saveGame(4, 100, 100, firetruck, firestation, ETFortresses);
         assertEquals(this.saveControls.checkIfSaveEmpty(4), false);
+    }
+
+    @Test
+    public void getSavedFiretruckTest() {
+        this.saveControls.saveGame(4, 100, 100, firetruck, firestation, ETFortresses);
+        assertNotNull(this.saveControls.getSavedFiretruck(Constants.TruckType.RED));
+    }
+
+    @Test
+    public void getSavedFortressTest() {
+        this.saveControls.saveGame(4, 100, 100, firetruck, firestation, ETFortresses);
+        assertNotNull(this.saveControls.getSavedFortress(Constants.FortressType.CASTLE1));
     }
 }
