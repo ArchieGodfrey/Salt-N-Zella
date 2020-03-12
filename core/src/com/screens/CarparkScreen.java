@@ -227,6 +227,7 @@ public class CarparkScreen implements Screen {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
+                    System.out.println("leave carpark");
                     firestation.toggleMenu(false);
                     game.setScreen(gameScreen);
                 }
@@ -256,7 +257,6 @@ public class CarparkScreen implements Screen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         game.loadGameFromSave(index);
-                        show();
                     }
                 });
             }
