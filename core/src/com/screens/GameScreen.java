@@ -1191,7 +1191,7 @@ public class GameScreen implements Screen {
 		float progress = (float) getETFortressesDestroyed()[0] / (float) getETFortressesDestroyed()[1];
 		return start - (progress*(start-end));
 	}
-
+    //wdw
 	/**
 	 * Returns the time for the fire station
 	 * @return	<code>if time greater than 0</code> time
