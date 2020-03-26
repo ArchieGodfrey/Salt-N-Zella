@@ -549,8 +549,8 @@ public class Firetruck extends MovementSprite {
         this.getHealthBar().resetResourceAmount();
     }
     private void immunity(){
+
         this.getHealthBar().resetResourceAmount();
-        this.getWaterBar().resetResourceAmount();
     }
     private void replenish(){
         if(this.powerupTimer%4 == 0) {
@@ -562,7 +562,7 @@ public class Firetruck extends MovementSprite {
         this.setAccelerationRate(20f);
     }
     private void damageUp(){
-        this.
+
     }
 
     /**
