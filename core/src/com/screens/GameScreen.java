@@ -84,6 +84,7 @@ public class GameScreen implements Screen {
 	private final ArrayList<Texture> waterFrames;
 	private final Texture projectileTexture;
 	private ArrayList<Texture> patrolTextures;
+	private ArrayList<Texture> powerupTextures;
 
 	// Objects for the patrol graph
 	final MapGraph mapGraph;
@@ -207,13 +208,14 @@ public class GameScreen implements Screen {
 		minigameSprites.add(new MinigameSprite(10, 92));
 		minigameSprites.add(new MinigameSprite(93, 106));
 
+		//type.getColourString()
 		// creates powerup sprites around the map
 		powerupSprites = new ArrayList<>();
-		powerupSprites.add(new PowerupSprite(40, 88));
-		powerupSprites.add(new PowerupSprite(52, 38));
-		powerupSprites.add(new PowerupSprite(103, 48));
-		powerupSprites.add(new PowerupSprite(103, 93));
-		powerupSprites.add(new PowerupSprite(62, 102));
+		powerupSprites.add(new PowerupSprite(this.buildPowerupTextures("ghost"), 40, 88));
+		powerupSprites.add(new PowerupSprite(this.buildPowerupTextures("ghost"),52, 38));
+		powerupSprites.add(new PowerupSprite(this.buildPowerupTextures("ghost"),103, 48));
+		powerupSprites.add(new PowerupSprite(this.buildPowerupTextures("ghost"),103, 93));
+		powerupSprites.add(new PowerupSprite(this.buildPowerupTextures("ghost"),62, 102));
 
 		// Initialise textures to use for sprites
 		Texture firestationTexture = new Texture("MapAssets/UniqueBuildings/firestation.png");
@@ -788,6 +790,18 @@ public class GameScreen implements Screen {
 			patrolTextures.add(texture);
 		}
 		this.patrolTextures = patrolTextures;
+	}
+
+	/**
+	 * Builds an array of textures that is used to render powerups
+	 */
+	private ArrayList<Texture> buildPowerupTextures(String type) {
+		ArrayList<Texture> powerupTextures = new ArrayList<Texture>();
+		for (int i = 32; i >= 1; i--) {
+			Texture texture = new Texture("Powerups/" + type + "/" + type + " (" + i + ").png");
+			powerupTextures.add(texture);
+		}
+		return powerupTextures;
 	}
 
 	/*
