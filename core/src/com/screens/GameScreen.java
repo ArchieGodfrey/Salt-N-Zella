@@ -40,6 +40,7 @@ import com.entities.*;
 import com.Kroy;
 import com.rafaskoberg.gdx.typinglabel.TypingLabel;
 import com.sprites.MinigameSprite;
+import com.sprites.PowerupSprite;
 
 // Constants import
 import static com.misc.Constants.*;
@@ -76,6 +77,7 @@ public class GameScreen implements Screen {
 	private final ArrayList<ETFortress> ETFortresses;
 	private final ArrayList<Projectile> projectiles;
 	private final ArrayList<MinigameSprite> minigameSprites;
+	private final ArrayList<PowerupSprite> powerupSprites;
 	private ArrayList<Projectile> projectilesToRemove;
 	private final ArrayList<Patrol> ETPatrols;
 	private final Firestation firestation;
@@ -204,6 +206,14 @@ public class GameScreen implements Screen {
 		minigameSprites.add(new MinigameSprite(30.5f, 55));
 		minigameSprites.add(new MinigameSprite(10, 92));
 		minigameSprites.add(new MinigameSprite(93, 106));
+
+		// creates powerup sprites around the map
+		powerupSprites = new ArrayList<>();
+		powerupSprites.add(new PowerupSprite(40, 88));
+		powerupSprites.add(new PowerupSprite(52, 38));
+		powerupSprites.add(new PowerupSprite(103, 48));
+		powerupSprites.add(new PowerupSprite(103, 93));
+		powerupSprites.add(new PowerupSprite(62, 102));
 
 		// Initialise textures to use for sprites
 		Texture firestationTexture = new Texture("MapAssets/UniqueBuildings/firestation.png");
@@ -396,6 +406,11 @@ public class GameScreen implements Screen {
 		// Render mini game sprites
 		for (MinigameSprite minigameSprite : minigameSprites) {
 			minigameSprite.update(this.game.batch);
+		}
+
+		// Render powerup sprites
+		for (PowerupSprite powerupSprite : powerupSprites) {
+			powerupSprite.update(this.game.batch);
 		}
 
 		this.firestation.update(this.game.batch);
@@ -641,6 +656,23 @@ public class GameScreen implements Screen {
 				this.firestation.getActiveFireTruck().setSpeed(new Vector2(0, 0));
 				this.firestation.getActiveFireTruck().setHose(false);
 				this.game.setScreen(new MinigameScreen(this.game, this));
+			}
+		}
+
+		// ==============================================================
+		//					Added for assessment 4
+		// ==============================================================
+		// Checks if truck has driven over a Powerup sprite
+		for (int i=0; i<this.powerupSprites.size(); i++) {
+			PowerupSprite powerupSprite = this.powerupSprites.get(i);
+			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), powerupSprite.getHitBox())) {
+				//if (!isInTutorial) firestationTimer.stop();
+				//popupTimer.stop();
+				//ETPatrolsTimer.stop();
+				this.powerupSprites.remove(powerupSprite);
+				//this.firestation.getActiveFireTruck().setSpeed(new Vector2(0, 0));
+				//this.firestation.getActiveFireTruck().setHose(false);
+				//this.game.setScreen(new MinigameScreen(this.game, this));
 			}
 		}
 
@@ -1191,7 +1223,7 @@ public class GameScreen implements Screen {
 		float progress = (float) getETFortressesDestroyed()[0] / (float) getETFortressesDestroyed()[1];
 		return start - (progress*(start-end));
 	}
-    //wdw
+
 	/**
 	 * Returns the time for the fire station
 	 * @return	<code>if time greater than 0</code> time
