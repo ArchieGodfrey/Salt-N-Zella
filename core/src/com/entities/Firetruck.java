@@ -60,6 +60,10 @@ public class Firetruck extends MovementSprite {
 
     private final Firestation fireStation;
 
+    //Powerup values
+    private int powerupTimer;
+    private String powerupType;
+
     /**
      * Creates a firetruck capable of moving and colliding with the tiledMap and other sprites.
      * It also requires an ID so that it can be focused with the camera. Drawn with the given
@@ -171,6 +175,37 @@ public class Firetruck extends MovementSprite {
         // Decrease timeout, used for keeping track of time between toggle presses
         if (this.toggleDelay > 0) this.toggleDelay -= 1;
 
+
+        //Run powerup methods for set amount of time:
+        if(this.powerupTimer > 2){
+            this.powerupTimer--;
+            switch(powerupType){
+                case "invisible":
+                    this.ghost();
+                    System.out.println(this.powerupTimer);
+                    break;
+                case "immunity":
+                    this.immunity();
+                    break;
+                case "replenish":
+                    this.replenish();
+                    break;
+                case "speedUp":
+                    this.speedUp();
+                    break;
+                case "damageUp":
+                    this.damageUp();
+                    break;
+                default:
+            }
+
+        }
+        else {
+            if(this.powerupTimer > 1) {
+                this.setAccelerationRate(this.getType().getProperties()[1]);
+
+            }
+        }
     }
 
     /**
@@ -498,6 +533,37 @@ public class Firetruck extends MovementSprite {
     }
 
     public void setArrow(boolean b) {this.isArrowVisible = b;}
+
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     */
+    public void setPowerup(int time, String type){
+        this.powerupTimer = time;
+        this.powerupType = type;
+    }
+
+    //Powerup effects
+    private void ghost(){
+        this.getHealthBar().resetResourceAmount();
+    }
+    private void immunity(){
+        this.getHealthBar().resetResourceAmount();
+        this.getWaterBar().resetResourceAmount();
+    }
+    private void replenish(){
+        if(this.powerupTimer%4 == 0) {
+            this.getHealthBar().addResourceAmount(1);
+            this.getWaterBar().addResourceAmount(1);
+        }
+    }
+    private void speedUp(){
+        this.setAccelerationRate(20f);
+    }
+    private void damageUp(){
+        this.
+    }
 
     /**
      * Dispose of all textures used by this class and its parents.

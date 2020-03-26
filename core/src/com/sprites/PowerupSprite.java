@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Polygon;
+import com.entities.Firetruck;
 import com.misc.Constants;
 
 import java.util.ArrayList;
@@ -76,4 +77,6 @@ public class PowerupSprite extends Sprite {
     public Polygon getHitBox() {
         return this.hitBox;
     }
+
+    public void action(Firetruck activeFireTruck){}
 }

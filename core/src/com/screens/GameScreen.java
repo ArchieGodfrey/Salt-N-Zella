@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 // Class imports
 import com.entities.*;
+import com.entities.powerups.*;
 import com.Kroy;
 import com.rafaskoberg.gdx.typinglabel.TypingLabel;
 import com.sprites.MinigameSprite;
@@ -211,11 +212,11 @@ public class GameScreen implements Screen {
 		//type.getColourString()
 		// creates powerup sprites around the map
 		powerupSprites = new ArrayList<>();
-		powerupSprites.add(new PowerupSprite(this.buildPowerupTextures("ghost"), 40, 88));
-		powerupSprites.add(new PowerupSprite(this.buildPowerupTextures("ghost"),52, 38));
-		powerupSprites.add(new PowerupSprite(this.buildPowerupTextures("ghost"),103, 48));
-		powerupSprites.add(new PowerupSprite(this.buildPowerupTextures("ghost"),103, 93));
-		powerupSprites.add(new PowerupSprite(this.buildPowerupTextures("ghost"),62, 102));
+		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"), 40, 88));
+		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"),52, 38));
+		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"),103, 48));
+		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"),103, 93));
+		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"),62, 102));
 
 		// Initialise textures to use for sprites
 		Texture firestationTexture = new Texture("MapAssets/UniqueBuildings/firestation.png");
@@ -668,13 +669,9 @@ public class GameScreen implements Screen {
 		for (int i=0; i<this.powerupSprites.size(); i++) {
 			PowerupSprite powerupSprite = this.powerupSprites.get(i);
 			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), powerupSprite.getHitBox())) {
-				//if (!isInTutorial) firestationTimer.stop();
-				//popupTimer.stop();
-				//ETPatrolsTimer.stop();
 				this.powerupSprites.remove(powerupSprite);
-				//this.firestation.getActiveFireTruck().setSpeed(new Vector2(0, 0));
-				//this.firestation.getActiveFireTruck().setHose(false);
-				//this.game.setScreen(new MinigameScreen(this.game, this));
+
+				powerupSprite.action(this.firestation.getActiveFireTruck());
 			}
 		}
 
