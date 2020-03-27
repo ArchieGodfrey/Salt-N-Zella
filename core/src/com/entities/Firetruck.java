@@ -61,9 +61,10 @@ public class Firetruck extends MovementSprite {
     private final Firestation fireStation;
 
     //Powerup values
-    private int powerupTimer;
+    private int[] powerupTimer;
     private String powerupType;
-
+    private boolean powerupActive;
+    public boolean isInvisible;
     /**
      * Creates a firetruck capable of moving and colliding with the tiledMap and other sprites.
      * It also requires an ID so that it can be focused with the camera. Drawn with the given
@@ -91,6 +92,9 @@ public class Firetruck extends MovementSprite {
         this.isArrowVisible = false;
         this.carparkLayer = carparkLayer;
         this.isBought = isBought;
+        this.powerupTimer = new int[6];
+
+        this.powerupActive = false;
     }
 
     /**
@@ -123,7 +127,7 @@ public class Firetruck extends MovementSprite {
     public void update(Batch batch, Camera camera) {
         super.update(batch);
         checkCarparkCollision();
-        drawVoxelImage(batch);
+
         // Look for key press input, then accelerate the firetruck in that direction
         if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)) {
             super.applyAcceleration(Direction.LEFT);
@@ -164,7 +168,7 @@ public class Firetruck extends MovementSprite {
         this.hoseRange.setPosition(this.getCentreX(), this.getCentreY());
         this.hoseRange.setRotation(hoseVector.angle());
 
-        // Change batch aplha to match bar to fade hose in and out
+        // Change batch alpha to match bar to fade hose in and out
         batch.setColor(1.0f, 1.0f, 1.0f, this.waterBar.getFade() * 0.9f);
         batch.draw(new TextureRegion(this.waterFrames.get(Math.round(this.getInternalTime() / 10) % 3)), this.hoseRange.getX(), this.hoseRange.getY() - this.hoseHeight / 2,
                 0, this.hoseHeight / 2, this.hoseWidth, this.hoseHeight, this.hoseRange.getScaleX(), this.hoseRange.getScaleY(), hoseVector.angle(), true);
@@ -175,37 +179,52 @@ public class Firetruck extends MovementSprite {
         // Decrease timeout, used for keeping track of time between toggle presses
         if (this.toggleDelay > 0) this.toggleDelay -= 1;
 
-
         //Run powerup methods for set amount of time:
-        if(this.powerupTimer > 2){
-            this.powerupTimer--;
+        if(powerupActive){
+            //Countdown all timers
+            this.powerupTimer[0]--;
+            this.powerupTimer[1]--;
+            this.powerupTimer[2]--;
+            this.powerupTimer[3]--;
+            this.powerupTimer[4]--;
+
             switch(powerupType){
                 case "invisible":
-                    this.ghost();
-                    System.out.println(this.powerupTimer);
-                    break;
+                    this.ghost(batch);
                 case "immunity":
-                    this.immunity();
-                    break;
+                    this.immunity(batch);
                 case "replenish":
                     this.replenish();
-                    break;
                 case "speedUp":
                     this.speedUp();
-                    break;
                 case "damageUp":
                     this.damageUp();
                     break;
                 default:
             }
 
-        }
-        else {
-            if(this.powerupTimer > 1) {
-                this.setAccelerationRate(this.getType().getProperties()[1]);
-
+            if(this.powerupTimer[0]<0 && this.powerupTimer[1]<0 && this.powerupTimer[2]<0 && this.powerupTimer[3]<0 && this.powerupTimer[4]<0){
+                this.powerupActive = false;
             }
         }
+        //Reset default values that may have changed
+        //Speed up
+        if(this.powerupTimer[3]<0) {
+            this.setAccelerationRate(this.getType().getProperties()[1]);
+        }
+        //Invisible
+        if(this.powerupTimer[0]<0) {
+            batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1.0f);
+            this.isInvisible = false;
+        }
+        //Immunity
+        if(this.powerupTimer[1]<0) {
+            batch.setColor(1.0f, 1.0f, 1.0f, batch.getColor().a);
+            this.isInvisible = false;
+        }
+
+        //Draw voxel image at the end so that invisible powerup takes effect
+        drawVoxelImage(batch);
     }
 
     /**
@@ -540,22 +559,41 @@ public class Firetruck extends MovementSprite {
      *  =======================================================================
      */
     public void setPowerup(int time, String type){
-        this.powerupTimer = time;
-        this.powerupType = type;
+            this.powerupType = type;
+            this.powerupActive = true;
+            switch(type){
+                case "invisible":
+                    this.powerupTimer[0] = time;
+                    break;
+                case "immunity":
+                    this.powerupTimer[1] = time;
+                    break;
+                case "replenish":
+                    this.powerupTimer[2] = time;
+                    break;
+                case "speedUp":
+                    this.powerupTimer[3] = time;
+                    break;
+                case "damageUp":
+                    this.powerupTimer[4] = time;
+                    break;
+            }
     }
 
     //Powerup effects
-    private void ghost(){
-        this.getHealthBar().resetResourceAmount();
+    private void ghost(Batch batch){
+        this.isInvisible = true;
+        batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 0.05f);
     }
-    private void immunity(){
-
+    private void immunity(Batch batch){
         this.getHealthBar().resetResourceAmount();
+        batch.setColor(0.2f, 0.2f, 0.2f, batch.getColor().a);
     }
     private void replenish(){
-        if(this.powerupTimer%4 == 0) {
+        //If statement slows down replenish rate by only adding on factors of 4
+        if(this.powerupTimer[2]%4 == 0) {
             this.getHealthBar().addResourceAmount(1);
-            this.getWaterBar().addResourceAmount(1);
+            this.getWaterBar().addResourceAmount(2);
         }
     }
     private void speedUp(){

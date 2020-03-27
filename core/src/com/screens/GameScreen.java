@@ -213,10 +213,10 @@ public class GameScreen implements Screen {
 		// creates powerup sprites around the map
 		powerupSprites = new ArrayList<>();
 		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"), 40, 88));
-		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"),52, 38));
-		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"),103, 48));
-		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"),103, 93));
-		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"),62, 102));
+		powerupSprites.add(new ReplenishPowerup(this.buildPowerupTextures("replenish"),52, 38));
+		powerupSprites.add(new ImmunityPowerup(this.buildPowerupTextures("immunity"),103, 48));
+		powerupSprites.add(new SpeedUpPowerup(this.buildPowerupTextures("speedUp"),103, 93));
+		powerupSprites.add(new SpeedUpPowerup(this.buildPowerupTextures("speedUp"),62, 102));
 
 		// Initialise textures to use for sprites
 		Texture firestationTexture = new Texture("MapAssets/UniqueBuildings/firestation.png");
@@ -604,7 +604,7 @@ public class GameScreen implements Screen {
 				ETFortress.getHealthBar().subtractResourceAmount((int) firetruck.getDamage());
 				this.score += 10;
 			}
-			if (ETFortress.isInRadius(firetruck.getCentre()) && ETFortress.canShootProjectile()) {
+			if (ETFortress.isInRadius(firetruck.getCentre()) && ETFortress.canShootProjectile() && !firetruck.isInvisible) {
 				Projectile projectile = new Projectile(this.projectileTexture, ETFortress.getCentreX(), ETFortress.getCentreY(), ETFortress.getType().getDamage());
 				projectile.calculateTrajectory(firetruck);
 				SFX.sfx_projectile.play();
@@ -633,7 +633,7 @@ public class GameScreen implements Screen {
 				patrol.getHealthBar().subtractResourceAmount((int) firetruck.getDamage());
 				this.score += 10;
 			}
-			if (patrol.isInRadius(firetruck.getCentre()) && patrol.canShootProjectile()) {
+			if (patrol.isInRadius(firetruck.getCentre()) && patrol.canShootProjectile() && !firetruck.isInvisible) {
 				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5);
 				projectile.calculateTrajectory(firetruck);
 				SFX.sfx_projectile.play();

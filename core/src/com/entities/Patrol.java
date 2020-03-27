@@ -83,6 +83,7 @@ public class Patrol extends PatrolMovementSprite {
 
         for (int i = 0; i < slicesLength; i++) {
             Texture texture = this.textureSlices.get(i);
+            batch.setColor(1.0f, 1.0f, 1.0f, 1.0f); //NEW
             batch.draw(new TextureRegion(texture), x, (y - slicesLength / 3f) + i, width / 2, height / 2, width, height, 1, 1, angle, true);
         }
     }
