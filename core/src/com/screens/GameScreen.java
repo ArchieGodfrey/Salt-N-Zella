@@ -1,5 +1,5 @@
 package com.screens;
-//
+
 // LibGDX imports
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.entities.Firestation;
 import com.misc.SFX;
+import com.misc.SaveControls;
 import com.pathFinding.Junction;
 import com.pathFinding.MapGraph;
 import com.badlogic.gdx.Gdx;
@@ -115,8 +116,9 @@ public class GameScreen implements Screen {
 	 * contained.
 	 *
 	 * @param game The game object.
+	 * @param isTutorial Whether the game should show the tutorial or not
 	 */
-	public GameScreen(final Kroy game) {
+	public GameScreen(final Kroy game, boolean isTutorial) {
 		// Assign the game to a property so it can be used when transitioning screens
 		this.game = game;
 
@@ -304,8 +306,9 @@ public class GameScreen implements Screen {
 			}
 		}, 7,10);
 
+		// Update the tutotial mode
 		isInTutorial = true;
-
+		if (!isTutorial) this.finishTutorial();
 	}
 
 	/**
@@ -537,6 +540,66 @@ public class GameScreen implements Screen {
 
 	/*
 	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
+	 * Save the game into a given save file
+	 * @param saveNumber The number of the save file to store the game in
+	 */
+	public void saveGame(int saveNumber) {
+		this.game.getSaveControls().saveGame(
+			saveNumber,
+			this.score,
+			this.time,
+			this.game.getDifficulty(),
+			this.firestation,
+			this.ETFortresses
+		);
+	}
+
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
+	 * Getter for the game screen save controls
+	 * @return	The save controls object
+	 */
+	public SaveControls getSaveControls() {
+		return this.game.getSaveControls();
+	}
+
+
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
+	 * Getter for the game screen difficulty
+	 * @return	The difficulty of the game
+	 */
+	public int getDifficulty() {
+		return this.game.getDifficulty();
+	}
+
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
+	 * Checks if the game is in the tutorial
+	 * @return	Whether the game is in the tutorial (true) or not (false)
+	 */
+	public boolean isInTutorial() {
+		return this.isInTutorial;
+	}
+
+	/*
+	 *  =======================================================================
 	 *                          Added for Assessment 3
 	 *  =======================================================================
 	 */
@@ -605,7 +668,7 @@ public class GameScreen implements Screen {
 				this.score += 10;
 			}
 			if (ETFortress.isInRadius(firetruck.getCentre()) && ETFortress.canShootProjectile() && !firetruck.isInvisible) {
-				Projectile projectile = new Projectile(this.projectileTexture, ETFortress.getCentreX(), ETFortress.getCentreY(), ETFortress.getType().getDamage());
+				Projectile projectile = new Projectile(this.projectileTexture, ETFortress.getCentreX(), ETFortress.getCentreY(), ETFortress.getType().getDamage(), this);
 				projectile.calculateTrajectory(firetruck);
 				SFX.sfx_projectile.play();
 				this.projectiles.add(projectile);
@@ -634,12 +697,12 @@ public class GameScreen implements Screen {
 				this.score += 10;
 			}
 			if (patrol.isInRadius(firetruck.getCentre()) && patrol.canShootProjectile() && !firetruck.isInvisible) {
-				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5);
+				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5, this);
 				projectile.calculateTrajectory(firetruck);
 				SFX.sfx_projectile.play();
 				this.projectiles.add(projectile);
 			} else if (!firestation.isDestroyed() && firestation.isVulnerable() && patrol.isInRadius(firestation.getCentre()) && patrol.canShootProjectile()) {
-				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5);
+				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5, this);
 				projectile.calculateTrajectory(firestation);
 				SFX.sfx_projectile.play();
 				this.projectiles.add(projectile);
@@ -728,7 +791,7 @@ public class GameScreen implements Screen {
 		ArrayList<Texture> truckTextures = this.buildFiretuckTextures(type.getColourString());
 		Firetruck firetruck = new Firetruck(truckTextures, this.waterFrames, type,
 				(TiledMapTileLayer) map.getLayers().get("Collision"), (TiledMapTileLayer) map.getLayers().get("Carpark"),
-				this.firestation, isActive);
+				this.firestation, isActive, this);
 		if (isActive) {
 			if (this.firestation.getActiveFireTruck() == null) {
 				this.firestation.setActiveFireTruck(firetruck);
@@ -1182,8 +1245,9 @@ public class GameScreen implements Screen {
 
 	/*
 	 *  =======================================================================
-	 *                          Added for Assessment 3
+	 *        Modified for Assessment 3		@author Archie Godfrey
 	 *  =======================================================================
+	 * 	Stopped resetting stats and position if loading from a save file
 	 */
 	/**
 	 * Multiple statements to reset the game after the
@@ -1203,10 +1267,20 @@ public class GameScreen implements Screen {
 			popupMessages.clear();
 			showPopupText("Good luck!", 1, 5);
 			firestationTimer.start();
-			firestation.getActiveFireTruck().getWaterBar().resetResourceAmount();
-			firestation.getActiveFireTruck().setRespawnLocation(0);
-			firestation.getActiveFireTruck().respawn();
-			firestation.getActiveFireTruck().setHose(false);
+			// If loading from a save file
+			if (this.game.getSaveControls().getCurrentSaveNumber() == 0) {
+				firestation.getActiveFireTruck().getWaterBar().resetResourceAmount();
+				firestation.getActiveFireTruck().setRespawnLocation(0);
+				firestation.getActiveFireTruck().respawn();
+				firestation.getActiveFireTruck().setHose(false);
+			} else {
+				this.time = this.game.getSaveControls().getSaveFile().time;
+				this.score = this.game.getSaveControls().getSaveFile().score;
+				this.firestation.parkFireTruck(this.getActiveTruck());
+				this.firestation.setActiveFireTruck(
+					this.firestation.getFiretruckByType(this.game.getSaveControls().getSaveFile().activeFireTruckType)
+				);
+			}
 			this.ETPatrols.clear();
 			this.camera.zoom = 1.3f;
 			this.zoomTarget = 1.2f;

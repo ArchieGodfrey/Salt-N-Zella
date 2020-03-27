@@ -172,8 +172,16 @@ public class ResourceBar {
      * Get the current resource amount.
      * @return The current resource amount;
      */
-    public float getCurrentAmount() {
+    public int getCurrentAmount() {
         return this.currentResourceAmount;
+    }
+
+    /** 
+     * Set the current resource amount.
+     * @param amount The amount the current resource amount will be set to;
+     */
+    public void setCurrentAmount(int amount) {
+        this.currentResourceAmount = amount;
     }
 
     /** 

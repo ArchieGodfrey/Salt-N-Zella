@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.misc.Constants;
 import com.misc.Arrow;
 import com.misc.ResourceBar;
+import com.screens.GameScreen;
 import com.sprites.MovementSprite;
 
 // Java util import
@@ -63,8 +64,15 @@ public class Firetruck extends MovementSprite {
     //Powerup values
     private int[] powerupTimer;
     private String powerupType;
+<<<<<<< HEAD
     private boolean powerupActive;
     public boolean isInvisible;
+=======
+
+    // The amount of damage the firetruck can do
+    private float damage;
+
+>>>>>>> 9d113ebcf876e0d5097f9959d5952170c10bffd8
     /**
      * Creates a firetruck capable of moving and colliding with the tiledMap and other sprites.
      * It also requires an ID so that it can be focused with the camera. Drawn with the given
@@ -78,8 +86,9 @@ public class Firetruck extends MovementSprite {
      * @param fireStation    The fire station
      * @param isBought       <code>true</code> if truck is bought to start with
      *                       <code>false</code> if truck needs to still be bought
+     * @param gameScreen     GameScreen to get difficulty and save controls
      */
-    public Firetruck(ArrayList<Texture> textureSlices, ArrayList<Texture> frames, TruckType type, TiledMapTileLayer collisionLayer, TiledMapTileLayer carparkLayer, Firestation fireStation, boolean isBought) {
+    public Firetruck(ArrayList<Texture> textureSlices, ArrayList<Texture> frames, TruckType type, TiledMapTileLayer collisionLayer, TiledMapTileLayer carparkLayer, Firestation fireStation, boolean isBought, GameScreen gameScreen) {
         super(textureSlices.get(textureSlices.size() - 1), collisionLayer);
         this.waterFrames = frames;
         this.firetruckSlices = textureSlices;
@@ -87,25 +96,39 @@ public class Firetruck extends MovementSprite {
         this.location = CarparkEntrances.Main1;
         this.setPosition(CarparkEntrances.Main1.getLocation().x, CarparkEntrances.Main1.getLocation().y);
         this.fireStation = fireStation;
-        this.create();
+        int difficulty = gameScreen.getDifficulty();
+        this.create(difficulty);
         this.arrow = new Arrow(15, 50, 100, 50);
         this.isArrowVisible = false;
         this.carparkLayer = carparkLayer;
         this.isBought = isBought;
+<<<<<<< HEAD
         this.powerupTimer = new int[6];
 
         this.powerupActive = false;
+=======
+        this.damage = this.getType().getProperties()[7] / difficulty;
+
+        // If loading from a save file
+        if (gameScreen.getSaveControls().getCurrentSaveNumber() != 0) {
+            this.getHealthBar().setCurrentAmount(gameScreen.getSaveControls().getSavedFiretruck(type).health);
+            this.waterBar.setCurrentAmount(gameScreen.getSaveControls().getSavedFiretruck(type).water);
+            this.isBought = gameScreen.getSaveControls().getSavedFiretruck(type).isBought;
+            this.location = gameScreen.getSaveControls().getSavedFiretruck(type).respawnLocation;
+            this.respawn();           
+        }
+>>>>>>> 9d113ebcf876e0d5097f9959d5952170c10bffd8
     }
 
     /**
      * Sets the health of the firetruck and its size provided in CONSTANTS.
      * Also initialises any properties needed by the firetruck.
      */
-    private void create() {
+    private void create(int difficulty) {
         super.setMovementHitBox(-90);
         this.isSpraying = true;
         this.setSize(FIRETRUCK_WIDTH, FIRETRUCK_HEIGHT);
-        this.getHealthBar().setMaxResource((int) this.getType().getProperties()[0]);
+        this.getHealthBar().setMaxResource((int) this.getType().getProperties()[0] / difficulty);
         this.setAccelerationRate(this.getType().getProperties()[1]);
         this.setDecelerationRate(this.getType().getProperties()[1] * 0.6f);
         this.setMaxSpeed(this.getType().getProperties()[2]);
@@ -115,7 +138,6 @@ public class Firetruck extends MovementSprite {
         // Start the firetruck facing left
         this.rotate(-90);
         this.resetSprite();
-
     }
 
     /**
@@ -534,7 +556,7 @@ public class Firetruck extends MovementSprite {
     }
 
     public float getDamage() {
-        return this.getType().getProperties()[7];
+        return this.damage;
     }
 
     public void buy() {

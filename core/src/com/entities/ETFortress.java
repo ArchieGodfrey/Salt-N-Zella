@@ -51,8 +51,16 @@ public class ETFortress extends SimpleSprite {
         this.setScale(scaleX, scaleY);
         this.setPosition(xPos, yPos);
         this.setSize(ETFORTRESS_WIDTH * this.getScaleX(), ETFORTRESS_HEIGHT * this.getScaleY());
-        this.getHealthBar().setMaxResource(type.getHealth());
+        this.getHealthBar().setMaxResource(type.getHealth() * gameScreen.getDifficulty());
         super.resetRotation(90);
+
+        // If loading from a save file
+        if (gameScreen.getSaveControls().getCurrentSaveNumber() != 0) {
+            this.getHealthBar().setCurrentAmount(gameScreen.getSaveControls().getSavedFortress(type).health);
+            if (gameScreen.getSaveControls().getSavedFortress(type).flooded) {
+                this.removeSprite(this.destroyed);
+            }
+        }
     }
 
     /**
@@ -70,7 +78,7 @@ public class ETFortress extends SimpleSprite {
                     " fortresses", 1, 7);
         } else if (!flooded && this.getInternalTime() % 150 == 0 && this.getHealthBar().getCurrentAmount() != this.getHealthBar().getMaxAmount()) {
             // Heal ETFortresses every second if not taking damage
-			this.getHealthBar().addResourceAmount(type.getHealing());
+			this.getHealthBar().addResourceAmount(type.getHealing() * gameScreen.getDifficulty());
         }
     }
 
@@ -96,7 +104,7 @@ public class ETFortress extends SimpleSprite {
      *                  <code>false</code> otherwise
      */
     public boolean isInRadius(Vector2 position) {
-        return this.getCentre().dst(position) <= type.getRange();
+        return this.getCentre().dst(position) <= type.getRange() * gameScreen.getDifficulty();
     }
 
     /**
@@ -108,7 +116,7 @@ public class ETFortress extends SimpleSprite {
     @Override
     public void drawDebug(ShapeRenderer renderer) {
         super.drawDebug(renderer);
-        renderer.circle(this.getCentreX(), this.getCentreY(), this.type.getRange());
+        renderer.circle(this.getCentreX(), this.getCentreY(), this.type.getRange() * gameScreen.getDifficulty());
     }
 
     public boolean isFlooded() {
