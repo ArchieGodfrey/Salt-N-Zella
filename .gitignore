@@ -242,3 +242,8 @@ gradle-app.setting
 
 # End of https://www.gitignore.io/api/osx,java,gradle,eclipse,intellij,netbeans
 .idea/
+
+# Ignore save files
+Save1.json
+Save2.json
+Save3.json
