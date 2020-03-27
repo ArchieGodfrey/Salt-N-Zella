@@ -64,15 +64,14 @@ public class Firetruck extends MovementSprite {
     //Powerup values
     private int[] powerupTimer;
     private String powerupType;
-<<<<<<< HEAD
+
     private boolean powerupActive;
     public boolean isInvisible;
-=======
+
 
     // The amount of damage the firetruck can do
     private float damage;
 
->>>>>>> 9d113ebcf876e0d5097f9959d5952170c10bffd8
     /**
      * Creates a firetruck capable of moving and colliding with the tiledMap and other sprites.
      * It also requires an ID so that it can be focused with the camera. Drawn with the given
@@ -102,11 +101,11 @@ public class Firetruck extends MovementSprite {
         this.isArrowVisible = false;
         this.carparkLayer = carparkLayer;
         this.isBought = isBought;
-<<<<<<< HEAD
+
         this.powerupTimer = new int[6];
 
         this.powerupActive = false;
-=======
+
         this.damage = this.getType().getProperties()[7] / difficulty;
 
         // If loading from a save file
@@ -117,7 +116,7 @@ public class Firetruck extends MovementSprite {
             this.location = gameScreen.getSaveControls().getSavedFiretruck(type).respawnLocation;
             this.respawn();           
         }
->>>>>>> 9d113ebcf876e0d5097f9959d5952170c10bffd8
+
     }
 
     /**
