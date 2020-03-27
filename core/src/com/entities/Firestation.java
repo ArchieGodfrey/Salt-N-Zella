@@ -56,7 +56,7 @@ public class Firestation extends SimpleSprite {
         this.gameScreen = gameScreen;
         this.setPosition(xPos, yPos);
         this.setSize(FIRESTATION_WIDTH, FIRESTATION_HEIGHT);
-        this.getHealthBar().setMaxResource(FIRESTATION_HEALTH);
+        this.getHealthBar().setMaxResource(FIRESTATION_HEALTH / gameScreen.getDifficulty());
         this.parkedFireTrucks = new ArrayList<>();
         this.isDestroyed = false;
         this.isVulnerable = false;

@@ -3,6 +3,7 @@ package com.entities;
 // LibGDX imports
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.screens.GameScreen;
 import com.badlogic.gdx.graphics.Texture;
 
 // Custom class import
@@ -36,11 +37,12 @@ public class Projectile extends MovementSprite {
      * @param x             The x-coordinate the projectile will start at.
      * @param y             The y-coordinate the projectile will start at.
      * @param damage        The amount of damage projectile does when it hits
+     * @param gameScreen    The gamescreen instance to get the difficulty
      */
-    public Projectile(Texture texture, float x, float y, int damage) {
+    public Projectile(Texture texture, float x, float y, int damage, GameScreen gameScreen) {
         super(texture);
         this.setPosition(x, y);
-        this.damage = damage;
+        this.damage = damage * gameScreen.getDifficulty();
         this.create();
     }
 

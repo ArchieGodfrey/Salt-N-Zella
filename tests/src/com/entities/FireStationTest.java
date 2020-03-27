@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.misc.Constants;
-import com.misc.SaveControls;
 import com.screens.GameScreen;
 import com.testrunner.GdxTestRunner;
 import org.junit.Before;
@@ -24,9 +23,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class FireStationTest {
 
     private Firestation firestation;
-
-    @Mock
-    SaveControls saveControls;
 
     @Mock
     private Texture textureMock;
@@ -66,7 +62,7 @@ public class FireStationTest {
 
     @Test
     public void refillEmptyTest() {
-        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, saveControls);
+        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, gameScreen);
         firetruck.getWaterBar().subtractResourceAmount(((int) firetruck.getWaterBar().getCurrentAmount()));
         float waterBefore = firetruck.getWaterBar().getCurrentAmount();
         firestation.repairRefill(firetruck);
@@ -76,7 +72,7 @@ public class FireStationTest {
 
     @Test
     public void refillNearlyFullTest() {
-        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, saveControls);
+        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, gameScreen);
         firetruck.getWaterBar().subtractResourceAmount(1);
         float waterBefore = firetruck.getWaterBar().getCurrentAmount();
         firestation.repairRefill(firetruck);
@@ -86,7 +82,7 @@ public class FireStationTest {
 
     @Test
     public void refillFullTest() {
-        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, saveControls);
+        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, gameScreen);
         firetruck.getWaterBar().subtractResourceAmount(0);
         float waterBefore = firetruck.getWaterBar().getCurrentAmount();
         firestation.repairRefill(firetruck);
@@ -96,7 +92,7 @@ public class FireStationTest {
 
     @Test
     public void repairNotAtFirestationTest() {
-        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, saveControls);
+        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, gameScreen);
         firestation.setActiveFireTruck(firetruck);
         firestation.getActiveFireTruck().getHealthBar().subtractResourceAmount(10);
         float healthBefore = firestation.getActiveFireTruck().getHealthBar().getCurrentAmount();
@@ -108,7 +104,7 @@ public class FireStationTest {
 
     @Test
     public void repairAtFirestationTest() {
-        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, saveControls);
+        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, gameScreen);
         firestation.setActiveFireTruck(firetruck);
         firestation.getActiveFireTruck().getHealthBar().subtractResourceAmount(10);
         float healthBefore = firestation.getActiveFireTruck().getHealthBar().getCurrentAmount();
@@ -120,7 +116,7 @@ public class FireStationTest {
 
     @Test
     public void repairAtFirestationAfterItHasBeenDestroyedTest() {
-        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, saveControls);
+        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, gameScreen);
         firestation.setActiveFireTruck(firetruck);
         firestation.getActiveFireTruck().getHealthBar().subtractResourceAmount(10);
         float healthBefore = firestation.getActiveFireTruck().getHealthBar().getCurrentAmount();
@@ -156,7 +152,7 @@ public class FireStationTest {
 
     @Test
     public void testOpenCarparkMenu() {
-        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, saveControls);
+        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, gameScreen);
         firestation.setActiveFireTruck(firetruck);
         firestation.toggleMenu(true);
         assertTrue(firestation.isMenuOpen() && !firestation.getActiveFireTruck().isSpraying());
@@ -164,7 +160,7 @@ public class FireStationTest {
 
     @Test
     public void testCloseCarparkMenuToRespawnFiretruck() {
-        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, saveControls);
+        Firetruck firetruck = new Firetruck(texturesMock, texturesMock, Constants.TruckType.BLUE, tileLayerMock, tileLayerMock, firestation, true, gameScreen);
         firestation.setActiveFireTruck(firetruck);
         firestation.toggleMenu(false);
 
