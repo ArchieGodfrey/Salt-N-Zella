@@ -534,6 +534,7 @@ public class GameScreen implements Screen {
 			saveNumber,
 			this.score,
 			this.time,
+			this.game.getDifficulty(),
 			this.firestation,
 			this.ETFortresses
 		);
@@ -550,6 +551,20 @@ public class GameScreen implements Screen {
 	 */
 	public SaveControls getSaveControls() {
 		return this.game.getSaveControls();
+	}
+
+
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
+	 * Getter for the game screen difficulty
+	 * @return	The difficulty of the game
+	 */
+	public int getDifficulty() {
+		return this.game.getDifficulty();
 	}
 
 	/*
@@ -635,7 +650,7 @@ public class GameScreen implements Screen {
 				this.score += 10;
 			}
 			if (ETFortress.isInRadius(firetruck.getCentre()) && ETFortress.canShootProjectile()) {
-				Projectile projectile = new Projectile(this.projectileTexture, ETFortress.getCentreX(), ETFortress.getCentreY(), ETFortress.getType().getDamage());
+				Projectile projectile = new Projectile(this.projectileTexture, ETFortress.getCentreX(), ETFortress.getCentreY(), ETFortress.getType().getDamage(), this);
 				projectile.calculateTrajectory(firetruck);
 				SFX.sfx_projectile.play();
 				this.projectiles.add(projectile);
@@ -664,12 +679,12 @@ public class GameScreen implements Screen {
 				this.score += 10;
 			}
 			if (patrol.isInRadius(firetruck.getCentre()) && patrol.canShootProjectile()) {
-				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5);
+				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5, this);
 				projectile.calculateTrajectory(firetruck);
 				SFX.sfx_projectile.play();
 				this.projectiles.add(projectile);
 			} else if (!firestation.isDestroyed() && firestation.isVulnerable() && patrol.isInRadius(firestation.getCentre()) && patrol.canShootProjectile()) {
-				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5);
+				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5, this);
 				projectile.calculateTrajectory(firestation);
 				SFX.sfx_projectile.play();
 				this.projectiles.add(projectile);
@@ -745,7 +760,7 @@ public class GameScreen implements Screen {
 		ArrayList<Texture> truckTextures = this.buildFiretuckTextures(type.getColourString());
 		Firetruck firetruck = new Firetruck(truckTextures, this.waterFrames, type,
 				(TiledMapTileLayer) map.getLayers().get("Collision"), (TiledMapTileLayer) map.getLayers().get("Carpark"),
-				this.firestation, isActive, this.game.getSaveControls());
+				this.firestation, isActive, this);
 		if (isActive) {
 			if (this.firestation.getActiveFireTruck() == null) {
 				this.firestation.setActiveFireTruck(firetruck);

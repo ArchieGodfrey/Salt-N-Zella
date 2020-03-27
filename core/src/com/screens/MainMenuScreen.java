@@ -34,11 +34,14 @@ public class MainMenuScreen implements Screen {
 	// A constant variable to store the game
 	final Kroy game;
 
-	// objects used for visuals
+	// Objects used for visuals
 	private final OrthographicCamera camera;
 	private final Stage stage;
 	private final Skin skin;
 	private final Viewport viewport;
+
+	// Whether the menu or difficulty is showing
+	private boolean showMenu;
 
 	/**
 	 * The constructor for the main menu screen. All game logic for the main
@@ -51,7 +54,8 @@ public class MainMenuScreen implements Screen {
 
 		skin = game.getSkin();
 		
-		// Create new sprite batch
+		// Show the menu options
+		showMenu = true;
 
 		// Create an orthographic camera
 		camera = new OrthographicCamera();
@@ -120,16 +124,49 @@ public class MainMenuScreen implements Screen {
 		Label heading = new Label("Kroy", new Label.LabelStyle(game.coolFont, Color.WHITE));
 		heading.setFontScale(2);
 		Label subHeading = new Label("Destroy the Fortresses and Save the City", new Label.LabelStyle(game.coolFont, Color.WHITE));
+
+		// Add buttons to table and style them
+		buttonTable.add(heading).padBottom(10);
+		buttonTable.row();
+		buttonTable.add(subHeading).padBottom(15);
+		buttonTable.row();
+		toggleMenuButtons(this.showMenu, buttonTable);
+
+		// Add table to stage
+		stage.addActor(bcgstack);
+	}
+
+	/*
+	*  =======================================================================
+	*       	Modified for Assessment 4		@author Archie Godfrey
+	*  =======================================================================
+	*			Toggles the menu buttons to first show all options
+	*					and then the difficulty options
+	*/
+	private void toggleMenuButtons(boolean show, Table buttonTable) {
+		if (show) {
+			createMenuOptions(buttonTable);
+		} else {
+			createDifficultyOptions(buttonTable);
+		}
+	}
+
+	/**
+	 * =======================================================================
+	 *       	Modified for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 *		Creates the menu options "Play", "Load", "How To Play"
+	 *				and "Quit" and displays them in a table
+	 *
+	 * @param buttonTable	The table to display the buttons in
+	 */
+	private void createMenuOptions(Table buttonTable) {
+		// Create menu buttons
 		TextButton playButton = new TextButton("Play", skin);
-		TextButton howToPlayButton = new TextButton("How to Play", skin);
+		TextButton howToPlayButton = new TextButton("How To Play", skin);
 		TextButton quitButton = new TextButton("Quit", skin);
 
-		/*
-		*  =======================================================================
-		*       	Modified for Assessment 4		@author Archie Godfrey
-		*  =======================================================================
-		*		Added save file load buttons to menu and listeners for each
-		*/
+		// Create load buttons
 		TextButton loadButton = new TextButton("Load", skin);
 		loadButton.center().pad(10, 7, 10, 7).setTouchable(Touchable.disabled);
 
@@ -151,11 +188,7 @@ public class MainMenuScreen implements Screen {
 			saveButtons.add(saveButton);
 		}
 
-		// Add buttons to table and style them
-		buttonTable.add(heading).padBottom(10);
-		buttonTable.row();
-		buttonTable.add(subHeading).padBottom(15);
-		buttonTable.row();
+		// Add buttons to table
 		buttonTable.add(playButton).padBottom(20).width(200).height(40);
 		buttonTable.row();
 		buttonTable.add(loadGroup).padBottom(20).width(200).height(40);
@@ -164,14 +197,13 @@ public class MainMenuScreen implements Screen {
 		buttonTable.row();
 		buttonTable.add(quitButton).width(200).height(40);
 
-		// Add listeners
+		// Show difficulty options on press
 		playButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				SFX.sfx_button_click.play();
-				game.getSaveControls().setCurrentSaveNumber(0);
-				game.setScreen(new StoryScreen(game));
-				dispose();
+				showMenu = false;
+				show();
 			}
 		});
 
@@ -188,6 +220,7 @@ public class MainMenuScreen implements Screen {
 			});
 		}
 
+		// Show controls on press
 		howToPlayButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -196,6 +229,7 @@ public class MainMenuScreen implements Screen {
 			}
 		});
 
+		// Quit game on press
 		quitButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -204,8 +238,78 @@ public class MainMenuScreen implements Screen {
 			}
 		});
 
-		// Add table to stage
-		stage.addActor(bcgstack);
+	}
+
+	/**
+	 * =======================================================================
+	 *       	Modified for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 *			Creates the menu options "Easy", "Medium", "Hard"
+	 *				and "Back" and displays them in a table
+	 *
+	 * @param buttonTable	The table to display the buttons in
+	 */
+	private void createDifficultyOptions(Table buttonTable) {
+		// Create difficulty buttons
+		TextButton easyButton = new TextButton("Easy", skin);
+		TextButton mediumButton = new TextButton("Medium", skin);
+		TextButton hardButton = new TextButton("Hard", skin);
+		TextButton backButton = new TextButton("Back", skin);
+
+		// Add buttons to table
+		buttonTable.add(easyButton).padBottom(20).width(200).height(40);
+		buttonTable.row();
+		buttonTable.add(mediumButton).padBottom(20).width(200).height(40);
+		buttonTable.row();
+		buttonTable.add(hardButton).padBottom(20).width(200).height(40);
+		buttonTable.row();
+		buttonTable.add(backButton).width(200).height(40);
+
+		// Play easy game on press
+		easyButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				SFX.sfx_button_click.play();
+				game.getSaveControls().setCurrentSaveNumber(0);
+				game.setDifficulty(1);
+				game.setScreen(new StoryScreen(game));
+				dispose();
+			}
+		});
+
+		// Play medium game on press
+		mediumButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				SFX.sfx_button_click.play();
+				game.getSaveControls().setCurrentSaveNumber(0);
+				game.setDifficulty(2);
+				game.setScreen(new StoryScreen(game));
+				dispose();
+			}
+		});
+
+		// Play hard game on press
+		hardButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				SFX.sfx_button_click.play();
+				game.getSaveControls().setCurrentSaveNumber(0);
+				game.setDifficulty(3);
+				game.setScreen(new StoryScreen(game));
+				dispose();
+			}
+		});
+
+		// Go back to other options on press
+		backButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				SFX.sfx_button_click.play();
+				showMenu = true;
+				show();
+			}
+		});
 	}
 
 	@Override

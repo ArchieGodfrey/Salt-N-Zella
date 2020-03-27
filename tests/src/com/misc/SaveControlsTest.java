@@ -35,7 +35,7 @@ public class SaveControlsTest {
 
     @Test
     public void saveGameTest() {
-        this.saveControls.saveGame(1, 100, 100, firestation, ETFortresses);
+        this.saveControls.saveGame(1, 100, 100, 1, firestation, ETFortresses);
         try {
             Path paths = Paths.get("Save1.json");
             Reader reader = Files.newBufferedReader(paths);
@@ -54,19 +54,19 @@ public class SaveControlsTest {
     @Test
     public void checkIfSaveEmptyTest() {
         assertEquals(this.saveControls.checkIfSaveEmpty(4), true);
-        this.saveControls.saveGame(4, 100, 100, firestation, ETFortresses);
+        this.saveControls.saveGame(4, 100, 100, 1, firestation, ETFortresses);
         assertEquals(this.saveControls.checkIfSaveEmpty(4), false);
     }
 
     @Test
     public void getSavedFiretruckTest() {
-        this.saveControls.saveGame(4, 100, 100, firestation, ETFortresses);
+        this.saveControls.saveGame(4, 100, 100, 1, firestation, ETFortresses);
         assertNotNull(this.saveControls.getSavedFiretruck(Constants.TruckType.RED));
     }
 
     @Test
     public void getSavedFortressTest() {
-        this.saveControls.saveGame(4, 100, 100, firestation, ETFortresses);
+        this.saveControls.saveGame(4, 100, 100, 1, firestation, ETFortresses);
         assertNotNull(this.saveControls.getSavedFortress(Constants.FortressType.CASTLE1));
     }
 }

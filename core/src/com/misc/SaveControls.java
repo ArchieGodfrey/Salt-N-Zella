@@ -46,6 +46,8 @@ public class SaveControls {
         public int score;
         // The saved time
         public int time;
+        // The saved game difficulty
+        public int difficulty;
         // The saved firestation health
         public int firestationHealth;
         // The saved active firetruck type
@@ -60,11 +62,12 @@ public class SaveControls {
             this.empty = true;
         };
         // Overloaded constructor, creates a full save file
-        public SaveFile(int score, int time, int firestationHealth, Constants.TruckType activeFireTruckType, ArrayList<SavedFiretruck> firetrucks, ArrayList<SavedFortress> ETFortresses) {
+        public SaveFile(int score, int time, int difficulty, int firestationHealth, Constants.TruckType activeFireTruckType, ArrayList<SavedFiretruck> firetrucks, ArrayList<SavedFortress> ETFortresses) {
             this.firetrucks = firetrucks;
             this.empty = false;
             this.score = score;
             this.time = time;
+            this.difficulty = difficulty;
             this.activeFireTruckType = activeFireTruckType;
             this.ETFortresses = ETFortresses;
             this.firestationHealth = firestationHealth;
@@ -136,11 +139,12 @@ public class SaveControls {
      * @param saveNumber    The number of the save file to store the JSON in
      * @param score         The game score to be converted
      * @param time          The game time to be converted
+     * @param difficulty    The game difficulty to be converted
      * @param activeTruck   The active firetruck to be converted
      * @param firestation   The firestation to be converted
      * @param ETFortresses  The ETFortresses to be converted
      */
-    public void saveGame(int saveNumber, int score, int time, Firestation firestation, ArrayList<ETFortress> ETFortresses) {
+    public void saveGame(int saveNumber, int score, int time, int difficulty, Firestation firestation, ArrayList<ETFortress> ETFortresses) {
         // Create an array to store all trucks to be saved
         ArrayList<SavedFiretruck> savedFiretrucks = new ArrayList<SavedFiretruck>();
         // Gets the active truck
@@ -174,7 +178,7 @@ public class SaveControls {
         }
         // Create a new save file
         SaveFile saveFile = new SaveFile(
-            score, time,
+            score, time, difficulty,
             firestation.getHealthBar().getCurrentAmount(),
             activeTruck.getType(),
             savedFiretrucks, savedFortresses
@@ -267,6 +271,14 @@ public class SaveControls {
      */
     public SaveFile getSaveFile() {
         return this.currentSaveFile;
+    }
+
+    /**
+     * Gets the saved game difficulty
+     * @return      The saved difficulty
+     */
+    public int getSavedDifficulty() {
+        return this.currentSaveFile.difficulty;
     }
 
     /**

@@ -25,20 +25,21 @@ import com.screens.MainMenuScreen;
  */
 public class Kroy extends Game {
 
-	// shared objects to use throughout the screens as quite heavy
+	// Shared objects to use throughout the screens as quite heavy
   	public Batch batch;
   	public SpriteBatch spriteBatch;
 	public BitmapFont coolFont;
 	private Label.LabelStyle font10;
 	private Skin skin;
 	private SaveControls saveControls;
+	private int difficulty;
 
 	/**
-	 * Display the main menu screen upon game start.
+	 * Create fields that will be needed at runtime and then display the main menu screen upon game start.
 	 */
 	public void create() {
 		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-
+		this.difficulty = 1;
 		this.saveControls = new SaveControls();
 		this.setFonts();
 		this.spriteBatch = new SpriteBatch();
@@ -85,6 +86,32 @@ public class Kroy extends Game {
 	 */
 	public SaveControls getSaveControls() {
 		return this.saveControls;
+	}
+
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
+	 * Setter for the game difficulty
+	 * @param difficulty	The difficulty of the game
+	 */
+	public void setDifficulty(int difficulty) {
+		this.difficulty = difficulty;
+	}
+
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
+	 * Getter for the game difficulty
+	 * @return	The difficulty of the game
+	 */
+	public int getDifficulty() {
+		return this.difficulty;
 	}
 
 	/*
