@@ -698,7 +698,7 @@ public class GameScreen implements Screen {
 				patrol.getHealthBar().subtractResourceAmount((int) firetruck.getDamage());
 				this.score += 10;
 			}
-			if (patrol.isInRadius(firetruck.getCentre()) && patrol.canShootProjectile() && !firetruck.isInvisible) {
+			if (patrol.isInRadius(firetruck.getCentre()) && patrol.canShootProjectile() && !firetruck.getInvisible()) {
 				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5, this);
 				projectile.calculateTrajectory(firetruck);
 				SFX.sfx_projectile.play();
