@@ -27,6 +27,11 @@ public class PowerupSprite extends Sprite {
     // texture slices to give 3D effect
     private final ArrayList<Texture> powerupSlices;
 
+    // Effect duration
+    private int activeTime = 600; //10 seconds
+    // Effect type
+    private String type;
+
     /**
      * Constructor for minigame sprite
      *
@@ -35,12 +40,12 @@ public class PowerupSprite extends Sprite {
      * @param x coordinate where the sprite spawns
      * @param y coordinate where the sprite spawns
      */
-    public PowerupSprite(ArrayList<Texture> textureSlices, float x, float y) {
+    public PowerupSprite(String type, ArrayList<Texture> textureSlices, float x, float y) {
         super(new Texture(Gdx.files.internal("powerup.png")));
         this.setBounds(x*Constants.TILE_DIMS, y*Constants.TILE_DIMS, 1.5f * 4, 1.5f * Constants.TILE_DIMS);
         this.hitBox = new Polygon(new float[]{0,0,this.getWidth(),0,this.getWidth(),this.getHeight(),0,this.getHeight()});
         this.hitBox.setPosition(this.getX(), this.getY());
-
+        this.type = type;
         this.powerupSlices = textureSlices;
     }
 
@@ -54,6 +59,35 @@ public class PowerupSprite extends Sprite {
 
         rotate(1);
         drawVoxelImage(batch);
+    }
+
+    /**
+     * Applies a powerup effect to the active truck
+     * @param activeFireTruck   The active truck to apply the effect to
+     */
+    public void action(Firetruck activeFireTruck){
+        if (type == "random") {
+            int random = (int)(Math.random() * 5);
+            switch(random){
+                case 0:
+                    activeFireTruck.setPowerup(activeTime, "invisible");
+                break;
+                case 1:
+                    activeFireTruck.setPowerup(activeTime, "replenish");
+                    break;
+                case 2:
+                    activeFireTruck.setPowerup(activeTime, "speedUp");
+                    break;
+                case 3:
+                    activeFireTruck.setPowerup(activeTime, "immunity");
+                    break;
+                case 4:
+                    activeFireTruck.setPowerup(activeTime, "damageUp");
+                    break;
+            }
+        } else {
+            activeFireTruck.setPowerup(activeTime, type);
+        }
     }
 
     /**
@@ -78,5 +112,4 @@ public class PowerupSprite extends Sprite {
         return this.hitBox;
     }
 
-    public void action(Firetruck activeFireTruck){}
 }

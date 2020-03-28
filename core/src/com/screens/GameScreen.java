@@ -38,7 +38,6 @@ import java.util.ArrayList;
 
 // Class imports
 import com.entities.*;
-import com.entities.powerups.*;
 import com.Kroy;
 import com.rafaskoberg.gdx.typinglabel.TypingLabel;
 import com.sprites.MinigameSprite;
@@ -214,13 +213,13 @@ public class GameScreen implements Screen {
 		//type.getColourString()
 		// creates powerup sprites around the map
 		powerupSprites = new ArrayList<>();
-		powerupSprites.add(new GhostPowerup(this.buildPowerupTextures("ghost"), 40, 88));
-		powerupSprites.add(new ReplenishPowerup(this.buildPowerupTextures("replenish"),52, 38));
-		powerupSprites.add(new ImmunityPowerup(this.buildPowerupTextures("immunity"),103, 48));
-		powerupSprites.add(new SpeedUpPowerup(this.buildPowerupTextures("speedUp"),103, 93));
-		powerupSprites.add(new DamageUpPowerup(this.buildPowerupTextures("damageUp"),62, 102));
-		powerupSprites.add(new RandomPowerup(this.buildPowerupTextures("random"),78, 13));
-		powerupSprites.add(new InfiniteWaterPowerup(this.buildPowerupTextures("infiniteWater"),21, 13));
+		powerupSprites.add(new PowerupSprite("ghost", this.buildPowerupTextures("ghost"), 40, 88));
+		powerupSprites.add(new PowerupSprite("replenish", this.buildPowerupTextures("replenish"),52, 38));
+		powerupSprites.add(new PowerupSprite("immunity", this.buildPowerupTextures("immunity"),103, 48));
+		powerupSprites.add(new PowerupSprite("speedUp", this.buildPowerupTextures("speedUp"),103, 93));
+		powerupSprites.add(new PowerupSprite("damageUp", this.buildPowerupTextures("damageUp"),62, 102));
+		powerupSprites.add(new PowerupSprite("random", this.buildPowerupTextures("random"),78, 13));
+		powerupSprites.add(new PowerupSprite("infiniteWater", this.buildPowerupTextures("infiniteWater"),21, 13));
 
 		// Initialise textures to use for sprites
 		Texture firestationTexture = new Texture("MapAssets/UniqueBuildings/firestation.png");
