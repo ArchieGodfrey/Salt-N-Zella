@@ -210,6 +210,7 @@ public class Firetruck extends MovementSprite {
             this.powerupTimer[2]--;
             this.powerupTimer[3]--;
             this.powerupTimer[4]--;
+            this.powerupTimer[5]--;
 
             switch(powerupType){
                 case "invisible":
@@ -223,10 +224,13 @@ public class Firetruck extends MovementSprite {
                 case "damageUp":
                     this.damageUp();
                     break;
+                case "infiniteWater":
+                    this.infiniteWater();
+                    break;
                 default:
             }
 
-            if(this.powerupTimer[0]<0 && this.powerupTimer[1]<0 && this.powerupTimer[2]<0 && this.powerupTimer[3]<0 && this.powerupTimer[4]<0){
+            if(this.powerupTimer[0]<0 && this.powerupTimer[1]<0 && this.powerupTimer[2]<0 && this.powerupTimer[3]<0 && this.powerupTimer[4]<0  && this.powerupTimer[5]<0){
                 this.powerupActive = false;
             }
         }
@@ -604,6 +608,9 @@ public class Firetruck extends MovementSprite {
                 case "damageUp":
                     this.powerupTimer[4] = time;
                     break;
+                case "infiniteWater":
+                    this.powerupTimer[5] = time;
+                    break;
             }
     }
 
@@ -631,6 +638,9 @@ public class Firetruck extends MovementSprite {
         if(this.damage == (this.getType().getProperties()[7] / difficulty)){
             this.damage *= damageMul;
         }
+    }
+    private void infiniteWater(){
+        this.getWaterBar().setCurrentAmount((int)this.getWaterBar().getMaxAmount());
     }
 
 

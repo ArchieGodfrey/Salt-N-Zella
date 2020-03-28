@@ -220,7 +220,7 @@ public class GameScreen implements Screen {
 		powerupSprites.add(new SpeedUpPowerup(this.buildPowerupTextures("speedUp"),103, 93));
 		powerupSprites.add(new DamageUpPowerup(this.buildPowerupTextures("damageUp"),62, 102));
 		powerupSprites.add(new RandomPowerup(this.buildPowerupTextures("random"),78, 13));
-		powerupSprites.add(new SpeedUpPowerup(this.buildPowerupTextures("infiniteWater"),21, 13));
+		powerupSprites.add(new InfiniteWaterPowerup(this.buildPowerupTextures("infiniteWater"),21, 13));
 
 		// Initialise textures to use for sprites
 		Texture firestationTexture = new Texture("MapAssets/UniqueBuildings/firestation.png");
