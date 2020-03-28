@@ -669,7 +669,7 @@ public class GameScreen implements Screen {
 				ETFortress.getHealthBar().subtractResourceAmount((int) firetruck.getDamage());
 				this.score += 10;
 			}
-			if (ETFortress.isInRadius(firetruck.getCentre()) && ETFortress.canShootProjectile() && !firetruck.isInvisible) {
+			if (ETFortress.isInRadius(firetruck.getCentre()) && ETFortress.canShootProjectile() && !firetruck.getInvisible()) {
 				Projectile projectile = new Projectile(this.projectileTexture, ETFortress.getCentreX(), ETFortress.getCentreY(), ETFortress.getType().getDamage(), this);
 				projectile.calculateTrajectory(firetruck);
 				SFX.sfx_projectile.play();
@@ -744,9 +744,11 @@ public class GameScreen implements Screen {
 		for (int i=0; i<this.projectiles.size(); i++) {
 			Projectile projectile = this.projectiles.get(i);
 			if (Intersector.overlapConvexPolygons(firetruck.getDamageHitBox(), projectile.getDamageHitBox())) {
-				SFX.sfx_truck_damage.play();
-				firetruck.getHealthBar().subtractResourceAmount(projectile.getDamage());
-				if (this.score >= 10) this.score -= 10;
+				if(!firetruck.getImmune()) {
+					SFX.sfx_truck_damage.play();
+					firetruck.getHealthBar().subtractResourceAmount(projectile.getDamage());
+					if (this.score >= 10) this.score -= 10;
+				}
 				this.projectiles.remove(projectile);
 			} else if (!firestation.isDestroyed() && firestation.isVulnerable() && Intersector.overlapConvexPolygons(firestation.getDamageHitBox(), projectile.getDamageHitBox())) {
 				firestation.getHealthBar().subtractResourceAmount(projectile.getDamage());

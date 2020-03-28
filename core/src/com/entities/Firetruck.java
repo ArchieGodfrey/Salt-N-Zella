@@ -67,6 +67,7 @@ public class Firetruck extends MovementSprite {
 
     private boolean powerupActive;
     public boolean isInvisible;
+    public boolean isImmune;
 
 
     // The amount of damage the firetruck can do
@@ -247,7 +248,7 @@ public class Firetruck extends MovementSprite {
         //Immunity
         if(this.powerupTimer[1]<0) {
             batch.setColor(1.0f, 1.0f, 1.0f, batch.getColor().a);
-            this.isInvisible = false;
+            this.isImmune = false;
         }
         //DamageUp
         if(this.powerupTimer[4]<0) {
@@ -584,6 +585,18 @@ public class Firetruck extends MovementSprite {
 
     public void setArrow(boolean b) {this.isArrowVisible = b;}
 
+
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     */
+    //Getter for invisible variable
+    public boolean getInvisible(){ return this.isInvisible; }
+
+    //Getter for immune variable
+    public boolean getImmune(){ return this.isImmune; }
+
     /*
      *  =======================================================================
      *                          Added for Assessment 4
@@ -620,7 +633,7 @@ public class Firetruck extends MovementSprite {
         batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 0.05f);
     }
     private void immunity(Batch batch){
-        //this.getHealthBar().resetResourceAmount();
+        this.isImmune = true;
         batch.setColor(0.2f, 0.2f, 0.2f, batch.getColor().a);
     }
     private void replenish(){
