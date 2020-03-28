@@ -72,6 +72,8 @@ public class Firetruck extends MovementSprite {
     // The amount of damage the firetruck can do
     private float damage;
 
+    private int difficulty;
+
     /**
      * Creates a firetruck capable of moving and colliding with the tiledMap and other sprites.
      * It also requires an ID so that it can be focused with the camera. Drawn with the given
@@ -95,7 +97,7 @@ public class Firetruck extends MovementSprite {
         this.location = CarparkEntrances.Main1;
         this.setPosition(CarparkEntrances.Main1.getLocation().x, CarparkEntrances.Main1.getLocation().y);
         this.fireStation = fireStation;
-        int difficulty = gameScreen.getDifficulty();
+        this.difficulty = gameScreen.getDifficulty();
         this.create(difficulty);
         this.arrow = new Arrow(15, 50, 100, 50);
         this.isArrowVisible = false;
@@ -242,6 +244,10 @@ public class Firetruck extends MovementSprite {
         if(this.powerupTimer[1]<0) {
             batch.setColor(1.0f, 1.0f, 1.0f, batch.getColor().a);
             this.isInvisible = false;
+        }
+        //DamageUp
+        if(this.powerupTimer[4]<0) {
+            this.damage = this.getType().getProperties()[7] / difficulty;
         }
 
         //Draw voxel image at the end so that invisible powerup takes effect
@@ -607,7 +613,7 @@ public class Firetruck extends MovementSprite {
         batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 0.05f);
     }
     private void immunity(Batch batch){
-        this.getHealthBar().resetResourceAmount();
+        //this.getHealthBar().resetResourceAmount();
         batch.setColor(0.2f, 0.2f, 0.2f, batch.getColor().a);
     }
     private void replenish(){
@@ -618,11 +624,15 @@ public class Firetruck extends MovementSprite {
         }
     }
     private void speedUp(){
-        this.setAccelerationRate(20f);
+        this.setAccelerationRate(this.getType().getProperties()[1] * 2);
     }
     private void damageUp(){
-
+        int damageMul = 2;
+        if(this.damage == (this.getType().getProperties()[7] / difficulty)){
+            this.damage *= damageMul;
+        }
     }
+
 
     /**
      * Dispose of all textures used by this class and its parents.
