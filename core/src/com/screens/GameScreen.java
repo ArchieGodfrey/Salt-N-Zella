@@ -96,6 +96,7 @@ public class GameScreen implements Screen {
 	private final Label scoreLabel;
 	private final Label timeLabel;
 	private final Label fpsLabel;
+	private final Label powerupLabel;
 
 	// objects for the popups and tutorial
 	private Queue<String> popupMessages;
@@ -182,6 +183,9 @@ public class GameScreen implements Screen {
 
 		fpsLabel = new Label("", game.getFont10());
 		vg.addActor(fpsLabel);
+
+		powerupLabel = new Label("", game.getFont10());
+		vg.addActor(powerupLabel);
 
 		table.add(vg).top();
 
@@ -434,6 +438,7 @@ public class GameScreen implements Screen {
 		// Draw the score, time and FPS to the screen at given co-ordinates
 		this.scoreLabel.setText("Score: " + this.score);
 		this.timeLabel.setText("Time: " + this.getFireStationTime());
+		this.powerupLabel.setText("Active Powerup: " + this.getActiveTruck().getPowerupType());
 		if (DEBUG_ENABLED) {
 			this.fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
 		} else {

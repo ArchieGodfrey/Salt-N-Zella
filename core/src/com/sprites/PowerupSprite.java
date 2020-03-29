@@ -21,7 +21,7 @@ import java.util.ArrayList;
  */
 public class PowerupSprite extends Sprite {
 
-    // using polygon as firetruck is a polygon, which is what it collides with
+    // using polygon as powerup is a polygon, which is what it collides with
     private final Polygon hitBox;
 
     // texture slices to give 3D effect
@@ -33,10 +33,9 @@ public class PowerupSprite extends Sprite {
     private String type;
 
     /**
-     * Constructor for minigame sprite
-     *
-     *
-     *
+     * Constructor for powerup sprite
+     * @param type the type of powerup that will be spawned
+     * @param textureSlices the built array of textures that will be used to draw the 3d sprite
      * @param x coordinate where the sprite spawns
      * @param y coordinate where the sprite spawns
      */
@@ -70,8 +69,8 @@ public class PowerupSprite extends Sprite {
             int random = (int)(Math.random() * 5);
             switch(random){
                 case 0:
-                    activeFireTruck.setPowerup(activeTime, "invisible");
-                break;
+                    activeFireTruck.setPowerup(activeTime, "ghost");
+                    break;
                 case 1:
                     activeFireTruck.setPowerup(activeTime, "replenish");
                     break;
@@ -91,7 +90,7 @@ public class PowerupSprite extends Sprite {
     }
 
     /**
-     * Draws the voxel representation of the firetruck. Incrementally builds the firetruck
+     * Draws the voxel representation of the powerup. Incrementally builds the firetruck
      * from layers of images with each image slightly higher than the last
      * As the sprite rotates, the y will move up and down to make it more noticable as a pickup item
      */

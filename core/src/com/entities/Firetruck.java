@@ -13,6 +13,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 // Custom class import
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.misc.Constants;
 import com.misc.Arrow;
 import com.misc.ResourceBar;
@@ -74,6 +75,7 @@ public class Firetruck extends MovementSprite {
     private float damage;
 
     private int difficulty;
+
 
     /**
      * Creates a firetruck capable of moving and colliding with the tiledMap and other sprites.
@@ -213,23 +215,12 @@ public class Firetruck extends MovementSprite {
             this.powerupTimer[4]--;
             this.powerupTimer[5]--;
 
-            switch(powerupType){
-                case "invisible":
-                    this.ghost(batch);
-                case "immunity":
-                    this.immunity(batch);
-                case "replenish":
-                    this.replenish();
-                case "speedUp":
-                    this.speedUp();
-                case "damageUp":
-                    this.damageUp();
-                    break;
-                case "infiniteWater":
-                    this.infiniteWater();
-                    break;
-                default:
-            }
+            if(this.powerupTimer[0]>0){this.ghost(batch);}
+            if(this.powerupTimer[1]>0){this.immunity();}
+            if(this.powerupTimer[2]>0){this.replenish();}
+            if(this.powerupTimer[3]>0){this.speedUp();}
+            if(this.powerupTimer[4]>0){this.damageUp();}
+            if(this.powerupTimer[5]>0){this.infiniteWater();}
 
             if(this.powerupTimer[0]<0 && this.powerupTimer[1]<0 && this.powerupTimer[2]<0 && this.powerupTimer[3]<0 && this.powerupTimer[4]<0  && this.powerupTimer[5]<0){
                 this.powerupActive = false;
@@ -247,7 +238,6 @@ public class Firetruck extends MovementSprite {
         }
         //Immunity
         if(this.powerupTimer[1]<0) {
-            batch.setColor(1.0f, 1.0f, 1.0f, batch.getColor().a);
             this.isImmune = false;
         }
         //DamageUp
@@ -597,6 +587,8 @@ public class Firetruck extends MovementSprite {
     //Getter for immune variable
     public boolean getImmune(){ return this.isImmune; }
 
+    //Getter for powerup type
+    public String getPowerupType(){return this.powerupType;}
     /*
      *  =======================================================================
      *                          Added for Assessment 4
@@ -606,7 +598,7 @@ public class Firetruck extends MovementSprite {
             this.powerupType = type;
             this.powerupActive = true;
             switch(type){
-                case "invisible":
+                case "ghost":
                     this.powerupTimer[0] = time;
                     break;
                 case "immunity":
@@ -632,15 +624,15 @@ public class Firetruck extends MovementSprite {
         this.isInvisible = true;
         batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 0.05f);
     }
-    private void immunity(Batch batch){
+    private void immunity(){
         this.isImmune = true;
-        batch.setColor(0.2f, 0.2f, 0.2f, batch.getColor().a);
     }
     private void replenish(){
-        //If statement slows down replenish rate by only adding on factors of 4
+        //If statement slows down replenish rate by only adding on factors of 4,
+        //reducing replenish speed by 4
         if(this.powerupTimer[2]%4 == 0) {
             this.getHealthBar().addResourceAmount(1);
-            this.getWaterBar().addResourceAmount(2);
+            this.getWaterBar().addResourceAmount(1);
         }
     }
     private void speedUp(){
@@ -655,6 +647,8 @@ public class Firetruck extends MovementSprite {
     private void infiniteWater(){
         this.getWaterBar().setCurrentAmount((int)this.getWaterBar().getMaxAmount());
     }
+
+
 
 
     /**
