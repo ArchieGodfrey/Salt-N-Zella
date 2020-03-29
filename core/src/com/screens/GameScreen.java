@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.entities.Firestation;
+import com.misc.ResourceBar;
 import com.misc.SFX;
 import com.misc.SaveControls;
 import com.pathFinding.Junction;
@@ -184,6 +185,7 @@ public class GameScreen implements Screen {
 		fpsLabel = new Label("", game.getFont10());
 		vg.addActor(fpsLabel);
 
+		//Added for assessment 4
 		powerupLabel = new Label("", game.getFont10());
 		vg.addActor(powerupLabel);
 
@@ -222,7 +224,7 @@ public class GameScreen implements Screen {
 		powerupSprites.add(new PowerupSprite("immunity", this.buildPowerupTextures("immunity"),103, 48));
 		powerupSprites.add(new PowerupSprite("speedUp", this.buildPowerupTextures("speedUp"),103, 93));
 		powerupSprites.add(new PowerupSprite("damageUp", this.buildPowerupTextures("damageUp"),62, 102));
-		powerupSprites.add(new PowerupSprite("random", this.buildPowerupTextures("random"),78, 13));
+		powerupSprites.add(new PowerupSprite("random", this.buildPowerupTextures("random"),79, 15));
 		powerupSprites.add(new PowerupSprite("infiniteWater", this.buildPowerupTextures("infiniteWater"),21, 13));
 
 		// Initialise textures to use for sprites
@@ -438,7 +440,15 @@ public class GameScreen implements Screen {
 		// Draw the score, time and FPS to the screen at given co-ordinates
 		this.scoreLabel.setText("Score: " + this.score);
 		this.timeLabel.setText("Time: " + this.getFireStationTime());
-		this.powerupLabel.setText("Active Powerup: " + this.getActiveTruck().getPowerupType());
+
+		//Added for assessment 4
+		//Display all the active firetruck powerups on screen.
+		String powerupDisplayText = "";
+		for(String temp : this.getActiveTruck().getPowerupDisplay()){
+			powerupDisplayText += temp + "\n";
+		}
+		this.powerupLabel.setText("Active Powerups:\n" + powerupDisplayText);
+
 		if (DEBUG_ENABLED) {
 			this.fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
 		} else {

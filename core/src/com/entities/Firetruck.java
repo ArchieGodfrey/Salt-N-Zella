@@ -215,6 +215,7 @@ public class Firetruck extends MovementSprite {
             this.powerupTimer[4]--;
             this.powerupTimer[5]--;
 
+            //Allow multiple powerups to be active at a time
             if(this.powerupTimer[0]>0){this.ghost(batch);}
             if(this.powerupTimer[1]>0){this.immunity();}
             if(this.powerupTimer[2]>0){this.replenish();}
@@ -222,6 +223,7 @@ public class Firetruck extends MovementSprite {
             if(this.powerupTimer[4]>0){this.damageUp();}
             if(this.powerupTimer[5]>0){this.infiniteWater();}
 
+            //If all powerups have ended then the powerups are stopped from running
             if(this.powerupTimer[0]<0 && this.powerupTimer[1]<0 && this.powerupTimer[2]<0 && this.powerupTimer[3]<0 && this.powerupTimer[4]<0  && this.powerupTimer[5]<0){
                 this.powerupActive = false;
             }
@@ -589,6 +591,18 @@ public class Firetruck extends MovementSprite {
 
     //Getter for powerup type
     public String getPowerupType(){return this.powerupType;}
+
+    //Getter for which powerup timers are active and returns a string of names to be displayed
+    public ArrayList<String> getPowerupDisplay(){
+        ArrayList<String> activePowerups = new ArrayList<>();
+        if(this.powerupTimer[0]>0){activePowerups.add("Invisible");}
+        if(this.powerupTimer[1]>0){activePowerups.add("Immune");}
+        if(this.powerupTimer[2]>0){activePowerups.add("Replenishing");}
+        if(this.powerupTimer[3]>0){activePowerups.add("Speed Up");}
+        if(this.powerupTimer[4]>0){activePowerups.add("Damage Up");}
+        if(this.powerupTimer[5]>0){activePowerups.add("Infinite Water");}
+        return activePowerups;
+    }
     /*
      *  =======================================================================
      *                          Added for Assessment 4
