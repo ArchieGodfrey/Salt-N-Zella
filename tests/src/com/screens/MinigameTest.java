@@ -48,7 +48,7 @@ public class MinigameTest {
 
     @Test
     public void testSpawnAlien() {
-        minigameScreen.setScreenDimentions(1000, 1000);
+        minigameScreen.setScreenDimensions(1000, 1000);
         int ETsBefore = minigameScreen.getOnScreenETs().size();
         minigameScreen.spawnAlien();
         int ETsAfter = minigameScreen.getOnScreenETs().size();

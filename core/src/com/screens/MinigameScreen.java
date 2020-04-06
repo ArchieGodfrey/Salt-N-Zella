@@ -88,6 +88,10 @@ public class MinigameScreen implements Screen {
         this.game = game;
         this.gameScreen = gameScreen;
 
+        // Set screen dimensions
+        screenWidth = Gdx.graphics.getWidth();
+        screenHeight = Gdx.graphics.getHeight();
+
         //load images for sprites
         waterImage = new Texture(Gdx.files.internal("Minigame/splashcircle.png"));
         background = new Texture(Gdx.files.internal("Minigame/minigame_bg_new.png"));
@@ -100,7 +104,7 @@ public class MinigameScreen implements Screen {
         for (int y = 4; y >= 0; y --) {
             for (int x = 2; x >= 0; x --) {
                 if (x != 1 || y != 0) {
-                    spawnPositions.add(new Vector2(325 + (270 * x), 110 + (120 * y)));
+                    spawnPositions.add(new Vector2(screenWidth * 0.253f + (screenWidth * 0.211f * x), screenHeight * 0.16f + (screenHeight * 0.165f * y)));
                 }
             }
         }
@@ -136,9 +140,6 @@ public class MinigameScreen implements Screen {
 
         //initialise score to 0
         score = 0;
-
-        screenWidth = Gdx.graphics.getWidth();
-        screenHeight = Gdx.graphics.getHeight();
 
         //create camera
         camera = new OrthographicCamera();
@@ -180,7 +181,7 @@ public class MinigameScreen implements Screen {
         
         //draw aliens on screen
         for (Alien alien : onScreenETs) {
-            game.spriteBatch.draw(alien.getTexture(), alien.getX(), alien.getY(), 75, 75);
+            game.spriteBatch.draw(alien.getTexture(), alien.getX(), alien.getY(), 100, 100);
         }
 
         game.spriteBatch.draw(background, 0, 0, screenWidth, screenHeight);
@@ -204,7 +205,7 @@ public class MinigameScreen implements Screen {
     public void resize(int width, int height) {
         camera.viewportHeight = height;
         camera.viewportWidth = width;
-        setScreenDimentions(width, height);
+        setScreenDimensions(width, height);
     }
 
     @Override
@@ -372,7 +373,7 @@ public class MinigameScreen implements Screen {
         return this.onScreenETs;
     }
 
-    public void setScreenDimentions(int width, int height) {
+    public void setScreenDimensions(int width, int height) {
         this.screenWidth = width;
         this.screenHeight = height;
     }
