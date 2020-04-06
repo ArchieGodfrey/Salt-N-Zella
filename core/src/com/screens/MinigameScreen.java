@@ -169,7 +169,7 @@ public class MinigameScreen implements Screen {
     @Override
     public void render(float delta) {
         //render screen
-        Gdx.gl.glClearColor(1, 0, 1, 1);
+        Gdx.gl.glClearColor(1, 0, 0.1f, 1);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
         camera.update();
@@ -338,8 +338,6 @@ public class MinigameScreen implements Screen {
     public void toGameScreen(boolean win) {
         if (win) {
             gameScreen.setScore(gameScreen.getScore() + score);
-        } else {
-            gameScreen.setScore(0);
         }
         this.game.setScreen(this.gameScreen);
         dispose();
