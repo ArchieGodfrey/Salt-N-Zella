@@ -68,6 +68,12 @@ public class CarparkScreen implements Screen {
     private final ArrayList<TextButton> saveTextButtons;
     private final ArrayList<TextButton> saveOptionButtons;
 
+    /*
+	 *  =======================================================================
+	 *       	Modified for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+     *              Added save and load/delete buttons
+	 */
     /**
      * Constructor for car park screen
      *
@@ -196,6 +202,12 @@ public class CarparkScreen implements Screen {
         stage.addActor(mainTable);
     }
 
+    /*
+	 *  =======================================================================
+	 *       	Modified for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+     *        Added save and load/delete buttons to the side of the menu
+	 */
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
      */
@@ -227,7 +239,6 @@ public class CarparkScreen implements Screen {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ESCAPE) {
-                    System.out.println("leave carpark");
                     firestation.toggleMenu(false);
                     game.setScreen(gameScreen);
                 }
@@ -256,7 +267,24 @@ public class CarparkScreen implements Screen {
                 saveTextButtons.get(i).addListener(new ClickListener(){
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
+                        if (gameScreen.getSaveControls().getCurrentSaveNumber() == index) {
+                            game.getSaveControls().deleteSave(index);
+                        }
                         game.loadGameFromSave(index);
+                    }
+                    @Override
+                    public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                        if (gameScreen.getSaveControls().getCurrentSaveNumber() == index) {
+                            saveTextButtons.get(index - 1).setText("  Delete Save ");
+                            saveTextButtons.get(index - 1).setColor(Color.RED);
+                        }
+                    }
+                    @Override
+                    public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                        if (gameScreen.getSaveControls().getCurrentSaveNumber() == index) {
+                            saveTextButtons.get(index - 1).setText("Current Save");
+                            saveTextButtons.get(index - 1).setColor(Color.LIGHT_GRAY);
+                        }
                     }
                 });
             }
@@ -309,6 +337,7 @@ public class CarparkScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.draw();
+        stage.act();
         firestation.decreaseInternalTime();
         firestation.checkRepairRefill(gameScreen.getFireStationTime(), true);
 
@@ -450,6 +479,11 @@ public class CarparkScreen implements Screen {
         }
     }
 
+    /*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
     /**
      * Builds each save file item which contains:
      * - save option button (save or overwrite)
@@ -472,7 +506,7 @@ public class CarparkScreen implements Screen {
             } else {
                 if (this.gameScreen.getSaveControls().getCurrentSaveNumber() == i) {
                     textButton.setText("Current Save");
-                    textButton.setTouchable(Touchable.disabled);
+                    textButton.setColor(Color.LIGHT_GRAY);
                 } else {
                     textButton.setText(" Load Save " + i + " ");
                     optionButton.setText("   Overwrite   ");
@@ -486,6 +520,11 @@ public class CarparkScreen implements Screen {
         }
     }
 
+    /*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
     /**
      * Builds the save selector section of the screen
      * it is called once the screen is opened
