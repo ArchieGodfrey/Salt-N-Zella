@@ -127,7 +127,13 @@ public class PatrolMovementSprite extends SimpleSprite {
         float angle = MathUtils.atan2(nextJunction.getY() - previousJunction.getY(),
                                       nextJunction.getX() - previousJunction.getX());
         double angleDEG = angle * (180/Math.PI);
-        this.setRotation((float) angleDEG);
+
+        int rotSpd = 3;
+        if(getRotation() < angleDEG){rotate(rotSpd);}
+        else{rotate(-rotSpd);}
+
+
+        /*this.setRotation((float) angleDEG);*/
     }
 
     /**
@@ -139,6 +145,7 @@ public class PatrolMovementSprite extends SimpleSprite {
         this.x += deltaX;
         this.y += deltaY;
         atNextJunction();
+        this.updateRotation();
     }
 
     /**

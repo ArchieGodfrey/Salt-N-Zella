@@ -862,7 +862,7 @@ public class GameScreen implements Screen {
 	 */
 	private void buildPatrolTextures() {
 		ArrayList<Texture> patrolTextures = new ArrayList<Texture>();
-		for (int i = 99; i >= 0; i--) {
+		for (int i = 93; i >= 0; i--) {
 			String numberFormat = String.format("%03d", i);
 			Texture texture = new Texture("AlienSlices/tile" + numberFormat + ".png");
 			patrolTextures.add(texture);
