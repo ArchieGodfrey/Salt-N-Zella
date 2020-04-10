@@ -205,6 +205,11 @@ public class Firetruck extends MovementSprite {
         // Decrease timeout, used for keeping track of time between toggle presses
         if (this.toggleDelay > 0) this.toggleDelay -= 1;
 
+        /*
+         *  =======================================================================
+         *                          Added for Assessment 4
+         *  =======================================================================
+         */
         //Run powerup methods for set amount of time:
         if(powerupActive){
             //Countdown all timers
@@ -228,7 +233,8 @@ public class Firetruck extends MovementSprite {
                 this.powerupActive = false;
             }
         }
-        //Reset default values that may have changed
+        //Reset default values that may have changed by power up effects. Ensures firetruck properties aren't
+        //permanently changed
         //Speed up
         if(this.powerupTimer[3]<0) {
             this.setAccelerationRate(this.getType().getProperties()[1]);
@@ -586,13 +592,28 @@ public class Firetruck extends MovementSprite {
     //Getter for invisible variable
     public boolean getInvisible(){ return this.isInvisible; }
 
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     */
     //Getter for immune variable
     public boolean getImmune(){ return this.isImmune; }
 
-    //Getter for powerup type
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     */
+    //Getter for power up type
     public String getPowerupType(){return this.powerupType;}
 
-    //Getter for which powerup timers are active and returns a string of names to be displayed
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     */
+    //Getter for finding out which power ups are currently active and returning an array of strings containing active powerups
     public ArrayList<String> getPowerupDisplay(){
         ArrayList<String> activePowerups = new ArrayList<>();
         if(this.powerupTimer[0]>0){activePowerups.add("Invisible");}
@@ -608,6 +629,8 @@ public class Firetruck extends MovementSprite {
      *                          Added for Assessment 4
      *  =======================================================================
      */
+    //Sets the powerup type and whether a powerup is active. It also sets the individual timers for each powerup so that
+    //each power up can be timed independantly.
     public void setPowerup(int time, String type){
             this.powerupType = type;
             this.powerupActive = true;
@@ -633,14 +656,24 @@ public class Firetruck extends MovementSprite {
             }
     }
 
-    //Powerup effects
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     *
+     * Powerup effects
+     */
+    //Sets the isInvisible flag to true and turns the fire truck transparent by temporarily changing the draw colour
     private void ghost(Batch batch){
         this.isInvisible = true;
         batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 0.05f);
     }
+    //Sets the immune flag to true so that the collision calculations stops damage.
     private void immunity(){
         this.isImmune = true;
     }
+
+    //Increases health and water over the duration of the power up
     private void replenish(){
         //If statement slows down replenish rate by only adding on factors of 4,
         //reducing replenish speed by 4
@@ -649,15 +682,20 @@ public class Firetruck extends MovementSprite {
             this.getWaterBar().addResourceAmount(1);
         }
     }
+    //Sets the acceleration to 2 times the active trucks original.
     private void speedUp(){
         this.setAccelerationRate(this.getType().getProperties()[1] * 2);
     }
+    //Increases damage by a multiplying factor
     private void damageUp(){
         int damageMul = 2;
+        //If statement stops the trucks damage from exponentially increasing over time, assures it will only be
+        //multiplied once in the power ups lifetime.
         if(this.damage == (this.getType().getProperties()[7] / difficulty)){
             this.damage *= damageMul;
         }
     }
+    //Sets the water amount to maximum so no water gets used when power up is active
     private void infiniteWater(){
         this.getWaterBar().setCurrentAmount((int)this.getWaterBar().getMaxAmount());
     }

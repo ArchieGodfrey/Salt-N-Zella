@@ -216,7 +216,7 @@ public class GameScreen implements Screen {
 		minigameSprites.add(new MinigameSprite(10, 92));
 		minigameSprites.add(new MinigameSprite(93, 106));
 
-		//type.getColourString()
+		//Added for assessment 4
 		// creates powerup sprites around the map
 		powerupSprites = new ArrayList<>();
 		powerupSprites.add(new PowerupSprite("ghost", this.buildPowerupTextures("ghost"), 40, 88));
@@ -421,6 +421,7 @@ public class GameScreen implements Screen {
 			minigameSprite.update(this.game.batch);
 		}
 
+		//Added for assessment 4
 		// Render powerup sprites
 		for (PowerupSprite powerupSprite : powerupSprites) {
 			powerupSprite.update(this.game.batch);
@@ -683,6 +684,7 @@ public class GameScreen implements Screen {
 				ETFortress.getHealthBar().subtractResourceAmount((int) firetruck.getDamage());
 				this.score += 10;
 			}
+			//Modified for assessment 4, enemy detection now checks if truck is invisible
 			if (ETFortress.isInRadius(firetruck.getCentre()) && ETFortress.canShootProjectile() && !firetruck.getInvisible()) {
 				Projectile projectile = new Projectile(this.projectileTexture, ETFortress.getCentreX(), ETFortress.getCentreY(), ETFortress.getType().getDamage(), this);
 				projectile.calculateTrajectory(firetruck);
@@ -712,6 +714,7 @@ public class GameScreen implements Screen {
 				patrol.getHealthBar().subtractResourceAmount((int) firetruck.getDamage());
 				this.score += 10;
 			}
+			//Modified for assessment 4, enemy detection now checks if truck is invisible
 			if (patrol.isInRadius(firetruck.getCentre()) && patrol.canShootProjectile() && !firetruck.getInvisible()) {
 				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5, this);
 				projectile.calculateTrajectory(firetruck);
@@ -745,6 +748,7 @@ public class GameScreen implements Screen {
 		//					Added for assessment 4
 		// ==============================================================
 		// Checks if truck has driven over a Powerup sprite
+		//Activate and remove power up once driven over
 		for (int i=0; i<this.powerupSprites.size(); i++) {
 			PowerupSprite powerupSprite = this.powerupSprites.get(i);
 			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), powerupSprite.getHitBox())) {
@@ -758,6 +762,7 @@ public class GameScreen implements Screen {
 		for (int i=0; i<this.projectiles.size(); i++) {
 			Projectile projectile = this.projectiles.get(i);
 			if (Intersector.overlapConvexPolygons(firetruck.getDamageHitBox(), projectile.getDamageHitBox())) {
+				//Modified for assessment 4, damage is negated if firetruck is immune
 				if(!firetruck.getImmune()) {
 					SFX.sfx_truck_damage.play();
 					firetruck.getHealthBar().subtractResourceAmount(projectile.getDamage());
