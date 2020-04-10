@@ -69,7 +69,7 @@ public class PowerupSprite extends Sprite {
      */
     public void action(Firetruck activeFireTruck){
         if (type == "random") {
-            int random = (int)(Math.random() * 5);
+            int random = (int)(Math.random() * 4.4);
             switch(random){
                 case 0:
                     activeFireTruck.setPowerup(activeTime, "ghost");
