@@ -84,6 +84,7 @@ public class GameScreen implements Screen {
 	private final ArrayList<Patrol> ETPatrols;
 	private final Firestation firestation;
 	private final ArrayList<Texture> waterFrames;
+	private final ArrayList<Texture> fireFrames; //NEW
 	private final Texture projectileTexture;
 	private ArrayList<Texture> patrolTextures;
 	private ArrayList<Texture> powerupTextures;
@@ -209,12 +210,30 @@ public class GameScreen implements Screen {
 			mapLayers.getIndex("Trees")
         };
 
+		// Create arrays of textures for animations
+		waterFrames = new ArrayList<Texture>();
+		fireFrames = new ArrayList<Texture>();
+
+		// Create patrol texture
+		buildPatrolTextures();
+
+		for (int i = 1; i <= 3; i++) {
+			Texture texture = new Texture("waterSplash" + i + ".png");
+			waterFrames.add(texture);
+		}
+		//Added for assessment 4
+		//Build fire frame texture for minigame
+		for (int i = 1; i <= 3; i++) {
+			Texture texture = new Texture("fire" + i + ".png");
+			fireFrames.add(texture);
+		}
+
         // creates mini game sprites around the map
 		minigameSprites = new ArrayList<>();
-		minigameSprites.add(new MinigameSprite(87, 68));
-		minigameSprites.add(new MinigameSprite(30.5f, 55));
-		minigameSprites.add(new MinigameSprite(10, 92));
-		minigameSprites.add(new MinigameSprite(93, 106));
+		minigameSprites.add(new MinigameSprite(87, 68, fireFrames));
+		minigameSprites.add(new MinigameSprite(30.5f, 55, fireFrames));
+		minigameSprites.add(new MinigameSprite(10, 92, fireFrames));
+		minigameSprites.add(new MinigameSprite(93, 106, fireFrames));
 
 		//type.getColourString()
 		// creates powerup sprites around the map
@@ -244,17 +263,6 @@ public class GameScreen implements Screen {
 		Texture mossyWetTexture = new Texture("MapAssets/UniqueBuildings/mossy_wet.png");
 
 		this.projectileTexture = new Texture("alienProjectile.png");
-
-		// Create arrays of textures for animations
-		waterFrames = new ArrayList<Texture>();
-
-		// Create patrol texture
-		buildPatrolTextures();
-
-		for (int i = 1; i <= 3; i++) {
-			Texture texture = new Texture("waterSplash" + i + ".png");
-			waterFrames.add(texture);
-		}
 
 		// ---- 4) Create entities that will be around for entire game duration - //
 
