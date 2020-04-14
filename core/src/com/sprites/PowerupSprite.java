@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 /**
  * This sprite can be located around the map and when
- * a player drives over it, the mini game will begin
+ * a player drives over it, the power up will be applied
  */
 public class PowerupSprite extends Sprite {
 
@@ -29,6 +29,7 @@ public class PowerupSprite extends Sprite {
 
     // Effect duration
     private int activeTime = 600; //10 seconds
+    
     // Effect type
     private String type;
 
@@ -54,9 +55,11 @@ public class PowerupSprite extends Sprite {
      * @param batch to be drawn to
      */
     public void update(Batch batch) {
-        //batch.draw(super.getTexture(), super.getX(), super.getY(), super.getWidth(), super.getHeight());
 
-        rotate(1);
+        //Rotate the sprite by factor
+        int rotateSpd = 1;
+        rotate(rotateSpd);
+
         drawVoxelImage(batch);
     }
 
@@ -66,7 +69,7 @@ public class PowerupSprite extends Sprite {
      */
     public void action(Firetruck activeFireTruck){
         if (type == "random") {
-            int random = (int)(Math.random() * 5);
+            int random = (int)(Math.random() * 4.4);
             switch(random){
                 case 0:
                     activeFireTruck.setPowerup(activeTime, "ghost");
@@ -90,7 +93,7 @@ public class PowerupSprite extends Sprite {
     }
 
     /**
-     * Draws the voxel representation of the powerup. Incrementally builds the firetruck
+     * Draws the voxel representation of the powerup. Incrementally builds the powerup
      * from layers of images with each image slightly higher than the last
      * As the sprite rotates, the y will move up and down to make it more noticable as a pickup item
      */
