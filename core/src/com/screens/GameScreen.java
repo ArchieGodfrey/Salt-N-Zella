@@ -188,6 +188,7 @@ public class GameScreen implements Screen {
 
 		//Added for assessment 4
 		powerupLabel = new Label("", game.getFont10());
+		powerupLabel.setAlignment(1);
 		vg.addActor(powerupLabel);
 
 		table.add(vg).top();
@@ -454,9 +455,13 @@ public class GameScreen implements Screen {
 		//Display all the active firetruck powerups on screen.
 		String powerupDisplayText = "";
 		for(String temp : this.getActiveTruck().getPowerupDisplay()){
-			powerupDisplayText += temp + "\n";
+			powerupDisplayText += "\n" + temp + "\n";
 		}
-		this.powerupLabel.setText("Active Powerups:\n" + powerupDisplayText);
+		if (this.getActiveTruck().getPowerupDisplay().size() > 0) {
+			this.powerupLabel.setText("Active Powerups:\n" + powerupDisplayText);
+		} else {
+			this.powerupLabel.setText("");
+		}
 
 		if (DEBUG_ENABLED) {
 			this.fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
