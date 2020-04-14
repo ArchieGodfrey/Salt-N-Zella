@@ -61,8 +61,20 @@ public class Firetruck extends MovementSprite {
 
     private final Firestation fireStation;
 
+    //Powerup values
+    private int[] powerupTimer;
+    private String powerupType;
+
+    private boolean powerupActive;
+    public boolean isInvisible;
+    public boolean isImmune;
+
+
     // The amount of damage the firetruck can do
     private float damage;
+
+    private int difficulty;
+
 
     /**
      * Creates a firetruck capable of moving and colliding with the tiledMap and other sprites.
@@ -87,12 +99,17 @@ public class Firetruck extends MovementSprite {
         this.location = CarparkEntrances.Main1;
         this.setPosition(CarparkEntrances.Main1.getLocation().x, CarparkEntrances.Main1.getLocation().y);
         this.fireStation = fireStation;
-        int difficulty = gameScreen.getDifficulty();
+        this.difficulty = gameScreen.getDifficulty();
         this.create(difficulty);
         this.arrow = new Arrow(15, 50, 100, 50);
         this.isArrowVisible = false;
         this.carparkLayer = carparkLayer;
         this.isBought = isBought;
+
+        this.powerupTimer = new int[6];
+
+        this.powerupActive = false;
+
         this.damage = this.getType().getProperties()[7] / difficulty;
 
         // If loading from a save file
@@ -103,6 +120,7 @@ public class Firetruck extends MovementSprite {
             this.location = gameScreen.getSaveControls().getSavedFiretruck(type).respawnLocation;
             this.respawn();           
         }
+
     }
 
     /**
@@ -134,7 +152,7 @@ public class Firetruck extends MovementSprite {
     public void update(Batch batch, Camera camera) {
         super.update(batch);
         checkCarparkCollision();
-        drawVoxelImage(batch);
+
         // Look for key press input, then accelerate the firetruck in that direction
         if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)) {
             super.applyAcceleration(Direction.LEFT);
@@ -175,7 +193,7 @@ public class Firetruck extends MovementSprite {
         this.hoseRange.setPosition(this.getCentreX(), this.getCentreY());
         this.hoseRange.setRotation(hoseVector.angle());
 
-        // Change batch aplha to match bar to fade hose in and out
+        // Change batch alpha to match bar to fade hose in and out
         batch.setColor(1.0f, 1.0f, 1.0f, this.waterBar.getFade() * 0.9f);
         batch.draw(new TextureRegion(this.waterFrames.get(Math.round(this.getInternalTime() / 10) % 3)), this.hoseRange.getX(), this.hoseRange.getY() - this.hoseHeight / 2,
                 0, this.hoseHeight / 2, this.hoseWidth, this.hoseHeight, this.hoseRange.getScaleX(), this.hoseRange.getScaleY(), hoseVector.angle(), true);
@@ -186,6 +204,56 @@ public class Firetruck extends MovementSprite {
         // Decrease timeout, used for keeping track of time between toggle presses
         if (this.toggleDelay > 0) this.toggleDelay -= 1;
 
+        /*
+         *  =======================================================================
+         *                          Added for Assessment 4
+         *  =======================================================================
+         */
+        //Run powerup methods for set amount of time:
+        if(powerupActive){
+            //Countdown all timers
+            this.powerupTimer[0]--;
+            this.powerupTimer[1]--;
+            this.powerupTimer[2]--;
+            this.powerupTimer[3]--;
+            this.powerupTimer[4]--;
+            this.powerupTimer[5]--;
+
+            //Allow multiple powerups to be active at a time
+            if(this.powerupTimer[0]>0){this.ghost(batch);}
+            if(this.powerupTimer[1]>0){this.immunity();}
+            if(this.powerupTimer[2]>0){this.replenish();}
+            if(this.powerupTimer[3]>0){this.speedUp();}
+            if(this.powerupTimer[4]>0){this.damageUp();}
+            if(this.powerupTimer[5]>0){this.infiniteWater();}
+
+            //If all powerups have ended then the powerups are stopped from running
+            if(this.powerupTimer[0]<0 && this.powerupTimer[1]<0 && this.powerupTimer[2]<0 && this.powerupTimer[3]<0 && this.powerupTimer[4]<0  && this.powerupTimer[5]<0){
+                this.powerupActive = false;
+            }
+        }
+        //Reset default values that may have changed by power up effects. Ensures firetruck properties aren't
+        //permanently changed
+        //Speed up
+        if(this.powerupTimer[3]<0) {
+            this.setAccelerationRate(this.getType().getProperties()[1]);
+        }
+        //Invisible
+        if(this.powerupTimer[0]<0) {
+            batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1.0f);
+            this.isInvisible = false;
+        }
+        //Immunity
+        if(this.powerupTimer[1]<0) {
+            this.isImmune = false;
+        }
+        //DamageUp
+        if(this.powerupTimer[4]<0) {
+            this.damage = this.getType().getProperties()[7] / difficulty;
+        }
+
+        //Draw voxel image at the end so that invisible powerup takes effect
+        drawVoxelImage(batch);
     }
 
     /**
@@ -513,6 +581,126 @@ public class Firetruck extends MovementSprite {
     }
 
     public void setArrow(boolean b) {this.isArrowVisible = b;}
+
+
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     */
+    //Getter for invisible variable
+    public boolean getInvisible(){ return this.isInvisible; }
+
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     */
+    //Getter for immune variable
+    public boolean getImmune(){ return this.isImmune; }
+
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     */
+    //Getter for power up type
+    public String getPowerupType(){return this.powerupType;}
+
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     */
+    //Getter for finding out which power ups are currently active and returning an array of strings containing active powerups
+    public ArrayList<String> getPowerupDisplay(){
+        ArrayList<String> activePowerups = new ArrayList<String>();
+        if(this.powerupTimer[0]>0){activePowerups.add("Invisible " + (int) Math.floor(this.powerupTimer[0] / 100));}
+        if(this.powerupTimer[1]>0){activePowerups.add("Immune " + (int) Math.floor(this.powerupTimer[1] / 100));}
+        if(this.powerupTimer[2]>0){activePowerups.add("Replenishing " + (int) Math.floor(this.powerupTimer[2] / 100));}
+        if(this.powerupTimer[3]>0){activePowerups.add("Speed Up " + (int) Math.floor(this.powerupTimer[3] / 100));}
+        if(this.powerupTimer[4]>0){activePowerups.add("Damage Up " + (int) Math.floor(this.powerupTimer[4] / 100));}
+        if(this.powerupTimer[5]>0){activePowerups.add("Infinite Water " + (int) Math.floor(this.powerupTimer[5] / 100));}
+        return activePowerups;
+    }
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     */
+    //Sets the powerup type and whether a powerup is active. It also sets the individual timers for each powerup so that
+    //each power up can be timed independantly.
+    public void setPowerup(int time, String type){
+            this.powerupType = type;
+            this.powerupActive = true;
+            switch(type){
+                case "ghost":
+                    this.powerupTimer[0] = time;
+                    break;
+                case "immunity":
+                    this.powerupTimer[1] = time;
+                    break;
+                case "replenish":
+                    this.powerupTimer[2] = time;
+                    break;
+                case "speedUp":
+                    this.powerupTimer[3] = time;
+                    break;
+                case "damageUp":
+                    this.powerupTimer[4] = time;
+                    break;
+                case "infiniteWater":
+                    this.powerupTimer[5] = time;
+                    break;
+            }
+    }
+
+    /*
+     *  =======================================================================
+     *                          Added for Assessment 4
+     *  =======================================================================
+     *
+     * Powerup effects
+     */
+    //Sets the isInvisible flag to true and turns the fire truck transparent by temporarily changing the draw colour
+    private void ghost(Batch batch){
+        this.isInvisible = true;
+        batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 0.05f);
+    }
+    //Sets the immune flag to true so that the collision calculations stops damage.
+    private void immunity(){
+        this.isImmune = true;
+    }
+
+    //Increases health and water over the duration of the power up
+    private void replenish(){
+        //If statement slows down replenish rate by only adding on factors of 4,
+        //reducing replenish speed by 4
+        if(this.powerupTimer[2]%4 == 0) {
+            this.getHealthBar().addResourceAmount(1);
+            this.getWaterBar().addResourceAmount(1);
+        }
+    }
+    //Sets the acceleration to 1.5 times the active trucks original.
+    private void speedUp(){
+        this.setAccelerationRate(this.getType().getProperties()[1] * 1.5f);
+    }
+    //Increases damage by a multiplying factor
+    private void damageUp(){
+        int damageMul = 2;
+        //If statement stops the trucks damage from exponentially increasing over time, assures it will only be
+        //multiplied once in the power ups lifetime.
+        if(this.damage == (this.getType().getProperties()[7] / difficulty)){
+            this.damage *= damageMul;
+        }
+    }
+    //Sets the water amount to maximum so no water gets used when power up is active
+    private void infiniteWater(){
+        this.getWaterBar().setCurrentAmount((int)this.getWaterBar().getMaxAmount());
+    }
+
+
+
 
     /**
      * Dispose of all textures used by this class and its parents.

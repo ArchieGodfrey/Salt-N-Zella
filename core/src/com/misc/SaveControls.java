@@ -234,6 +234,23 @@ public class SaveControls {
     }
 
     /**
+     * Attempts to delete a save file. If deleting the save file in use,
+     * set the currentSaveNumber to 0 to start a new game on reload
+     * @param saveNumber The index of the save file to delete
+     */
+    public void deleteSave(int saveNumber) {
+        if (saveNumber == this.currentSaveNumber) {
+            this.currentSaveNumber = 0;
+        }
+        Path paths = Paths.get("Save" + saveNumber + ".json");
+        try {
+            Files.deleteIfExists(paths);
+        } catch (IOException e) {
+            System.out.println("Unable to delete file");
+        }
+    }
+
+    /**
      * Gets the index of the save file currently used. Will be 0
      * if no save is loaded.
      * @return The index of the save file currently loaded

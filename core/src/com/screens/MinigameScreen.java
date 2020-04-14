@@ -2,7 +2,7 @@ package com.screens;
 
 /*
  *  =======================================================================
- *                      New class added for Assessment 3
+ *       	Modified for Assessment 4		@author Archie Godfrey
  *  =======================================================================
  */
 
@@ -54,6 +54,8 @@ public class MinigameScreen implements Screen {
     // values to control spawning and despawning ETs
     private long timeSpawn;
     private final Random random;
+    private double currentRowSpawn;
+    private final ArrayList<Vector2> spawnPositions;
     private final ArrayList<Alien> onScreenETs;
     private final TreeMap<Double, AlienType> map;
 
@@ -62,27 +64,54 @@ public class MinigameScreen implements Screen {
     private boolean canSpray;
     private Vector2 clicked;
 
+    private MinigameSprite sprite;
     private final MiniGameInputHandler miniGameInputHandler;
 
     /**
+     *  =======================================================================
+	 *       	Modified for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+     *  Changed the background image to keep the minigame more inline with the
+     *  main game. Aliens now spawn in the top right window and make their way
+     *  to the bottom. The player must survive for 30 seconds in order to gain
+     *  points, if the aliens reach the bottom the player loses and their score
+     *  is set to 0 and the minigame ends. If the player wins they gain their
+     *  score and the minigame is removed from the main game.
+     * 
      * Constructor for minigame screen which is called when
      * the player drives over {@link MinigameSprite} in
      * {@link GameScreen}
      *
      * @param game          to change screen and access shared batch
      * @param gameScreen    to return back to after minigame completion
+     * @param sprite        the minigame sprite that triggered the game
      */
-    public MinigameScreen(Kroy game, GameScreen gameScreen) {
+    public MinigameScreen(Kroy game, GameScreen gameScreen, MinigameSprite sprite) {
 
         this.game = game;
         this.gameScreen = gameScreen;
+        this.sprite = sprite;
+
+        // Set screen dimensions
+        screenWidth = Gdx.graphics.getWidth();
+        screenHeight = Gdx.graphics.getHeight();
 
         //load images for sprites
         waterImage = new Texture(Gdx.files.internal("Minigame/splashcircle.png"));
-        background = new Texture(Gdx.files.internal("Minigame/minigame_bg.png"));
+        background = new Texture(Gdx.files.internal("Minigame/minigame_bg_new.png"));
 
         //alien creation
         onScreenETs = new ArrayList<Alien>();
+
+        // Create spawn locations that are in windows
+        spawnPositions = new ArrayList<Vector2>();
+        for (int y = 4; y >= 0; y --) {
+            for (int x = 2; x >= 0; x --) {
+                if (x != 1 || y != 0) {
+                    spawnPositions.add(new Vector2(screenWidth * 0.253f + (screenWidth * 0.211f * x), screenHeight * 0.16f + (screenHeight * 0.165f * y)));
+                }
+            }
+        }
 
         ArrayList<AlienType> typeOfAliens = new ArrayList<>();
         typeOfAliens.add(AlienType.blue);
@@ -116,9 +145,6 @@ public class MinigameScreen implements Screen {
         //initialise score to 0
         score = 0;
 
-        screenWidth = Gdx.graphics.getWidth();
-        screenHeight = Gdx.graphics.getHeight();
-
         //create camera
         camera = new OrthographicCamera();
         camera.setToOrtho(false, screenWidth, screenHeight);
@@ -139,12 +165,15 @@ public class MinigameScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(miniGameInputHandler);
+
+        // Start aliens spawning in top row
+        this.currentRowSpawn = 2;
     }
 
     @Override
     public void render(float delta) {
         //render screen
-        Gdx.gl.glClearColor(1, 0, 1, 1);
+        Gdx.gl.glClearColor(1, 0, 0.1f, 1);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
         camera.update();
@@ -153,12 +182,13 @@ public class MinigameScreen implements Screen {
         game.spriteBatch.setProjectionMatrix(camera.combined);
 
         game.spriteBatch.begin();
-        game.spriteBatch.draw(background, 0, 0, screenWidth, screenHeight);
-
+        
         //draw aliens on screen
         for (Alien alien : onScreenETs) {
             game.spriteBatch.draw(alien.getTexture(), alien.getX(), alien.getY(), 100, 100);
         }
+
+        game.spriteBatch.draw(background, 0, 0, screenWidth, screenHeight);
 
         drawWater();
 
@@ -171,7 +201,7 @@ public class MinigameScreen implements Screen {
 
         if (TimeUtils.millis() > timeSpawn + MINIGAME_SPAWN_RATE) spawnAlien();
 
-        if (time <= 0) toGameScreen();
+        if (time <= 0) toGameScreen(true);
 
     }
 
@@ -179,7 +209,7 @@ public class MinigameScreen implements Screen {
     public void resize(int width, int height) {
         camera.viewportHeight = height;
         camera.viewportWidth = width;
-        setScreenDimentions(width, height);
+        setScreenDimensions(width, height);
     }
 
     @Override
@@ -204,6 +234,11 @@ public class MinigameScreen implements Screen {
     }
 
     /**
+     *  =======================================================================
+	 *       	Modified for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+     *    Added a clause to end the game when an alien reaches the end, also
+     *          decreases the furthest position an alien can spawn by 1
      * Check if an alien on the screen is ready to be
      * despawned by being clicked on or by the timer
      */
@@ -213,10 +248,17 @@ public class MinigameScreen implements Screen {
 
             if (TimeUtils.millis() > alien.getSpawnTime() + alien.type.getAliveTime()) {
                 onScreenETs.remove(alien);
+                // If alien reaches the last position, end game
+                if (new Vector2(alien.getX(), alien.getY()).equals(this.spawnPositions.get(this.spawnPositions.size() - 1))) {
+                    toGameScreen(false);
+                }
             }
 
             if (alien.getBoundingRectangle().contains(clicked)) {
                 score += alien.getScore();
+                if (this.currentRowSpawn > 1) {
+                    this.currentRowSpawn -= 1;
+                }
                 onScreenETs.remove(alien);
             }
         }
@@ -230,11 +272,32 @@ public class MinigameScreen implements Screen {
     }
 
     /**
+     *  =======================================================================
+	 *       	Modified for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+     *   Now increments the current row by 2 each call and spawns an alien at
+     *                      the front of the queue
+     * 
      * Spawns an alien and resets the spawn timer
      */
     public void spawnAlien() {
-        onScreenETs.add(new Alien(generateType(), generateLocation()));
-        timeSpawn = TimeUtils.millis();
+        // Spawn 2 aliens anywhere on the building
+        for (int i = 0; i < 3; i++) {
+            onScreenETs.add(new Alien(generateType(), generateLocation()));
+        }
+        // and have a leading alien
+        onScreenETs.add(new Alien(generateType(), this.spawnPositions.get((int) this.currentRowSpawn)));
+        
+        // Increase the spawn speed over the game
+        timeSpawn = TimeUtils.millis() - (600 - (time * 20));
+
+        // Increase the leading aliens row by 2 (so it has two random positions to choose)
+        if (this.currentRowSpawn < this.spawnPositions.size() - 2) {
+            this.currentRowSpawn += 2;
+            // Until the end is almost reached then add 1 (odd number of positions)
+        } else if (this.currentRowSpawn < this.spawnPositions.size() - 1) {
+            this.currentRowSpawn += 1;
+        }
     }
 
     /**
@@ -251,24 +314,36 @@ public class MinigameScreen implements Screen {
     }
 
     /**
-     * Generated a random location on the screen to
-     * spawn the ET, within a border to prevent them
-     * appearing partly or fully off the screen
+     *  =======================================================================
+	 *       	Modified for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+     * Game now uses set spawn positions to show aliens in windows. Generates
+     * a random window to show the alien at. Aliens start at the top and move
+     * down row by row.
      *
      * @return  vector of random location
      */
     private Vector2 generateLocation(){
-        int randomX = random.nextInt((screenWidth-150 - 50) + 1) + 50;
-        int randomY = random.nextInt((screenHeight-150 - 250) + 1) + 250;
-        return new Vector2(randomX, randomY);
+        int row = (int) Math.ceil(this.currentRowSpawn / 3);
+        return this.spawnPositions.get(random.nextInt((row * 3) - 1));
     }
 
     /**
-     * Goes back to the game screen once the user presses escape
-     * or when the time runs out
+     *  =======================================================================
+	 *       	Modified for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+     *      Added ability to lose the game, score affected by win parameter
+     * 
+     * Goes back to the game screen once the user presses escape,
+     * when the time runs out, or if the player loses
+     * 
+     * @param win Whether the player won the minigame (true) or not (false)
      */
-    public void toGameScreen() {
-        gameScreen.setScore(gameScreen.getScore() + score);
+    public void toGameScreen(boolean win) {
+        if (win) {
+            gameScreen.setScore(gameScreen.getScore() + score);
+            gameScreen.removeMinigame(this.sprite);
+        }
         this.game.setScreen(this.gameScreen);
         dispose();
     }
@@ -301,7 +376,7 @@ public class MinigameScreen implements Screen {
         return this.onScreenETs;
     }
 
-    public void setScreenDimentions(int width, int height) {
+    public void setScreenDimensions(int width, int height) {
         this.screenWidth = width;
         this.screenHeight = height;
     }

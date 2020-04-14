@@ -37,7 +37,7 @@ public class MiniGameInputHandler implements InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ESCAPE) {
-            minigameScreen.toGameScreen();
+            minigameScreen.toGameScreen(false);
         }
         return true;
     }

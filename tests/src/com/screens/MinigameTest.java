@@ -6,6 +6,7 @@ import com.entities.Alien;
 import com.misc.Constants;
 import com.screens.GameScreen;
 import com.screens.MinigameScreen;
+import com.sprites.MinigameSprite;
 import com.testrunner.GdxTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,13 +26,14 @@ public class MinigameTest {
     private Kroy kroyMock;
     @Mock
     private GameScreen gameScreenMock;
-
+    @Mock
+    private MinigameSprite spriteMock;
     private MinigameScreen minigameScreen;
 
     @Before
     public void setUp() {
         initMocks(this);
-        minigameScreen = new MinigameScreen(kroyMock, gameScreenMock);
+        minigameScreen = new MinigameScreen(kroyMock, gameScreenMock, spriteMock);
     }
 
     @Test
@@ -48,7 +50,7 @@ public class MinigameTest {
 
     @Test
     public void testSpawnAlien() {
-        minigameScreen.setScreenDimentions(1000, 1000);
+        minigameScreen.setScreenDimensions(1000, 1000);
         int ETsBefore = minigameScreen.getOnScreenETs().size();
         minigameScreen.spawnAlien();
         int ETsAfter = minigameScreen.getOnScreenETs().size();

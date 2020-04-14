@@ -41,6 +41,7 @@ import com.entities.*;
 import com.Kroy;
 import com.rafaskoberg.gdx.typinglabel.TypingLabel;
 import com.sprites.MinigameSprite;
+import com.sprites.PowerupSprite;
 
 // Constants import
 import static com.misc.Constants.*;
@@ -77,10 +78,12 @@ public class GameScreen implements Screen {
 	private final ArrayList<ETFortress> ETFortresses;
 	private final ArrayList<Projectile> projectiles;
 	private final ArrayList<MinigameSprite> minigameSprites;
+	private final ArrayList<PowerupSprite> powerupSprites;
 	private ArrayList<Projectile> projectilesToRemove;
 	private final ArrayList<Patrol> ETPatrols;
 	private final Firestation firestation;
 	private final ArrayList<Texture> waterFrames;
+	private final ArrayList<Texture> fireFrames; //NEW
 	private final Texture projectileTexture;
 	private ArrayList<Texture> patrolTextures;
 
@@ -93,6 +96,7 @@ public class GameScreen implements Screen {
 	private final Label scoreLabel;
 	private final Label timeLabel;
 	private final Label fpsLabel;
+	private final Label powerupLabel;
 
 	// objects for the popups and tutorial
 	private Queue<String> popupMessages;
@@ -180,6 +184,11 @@ public class GameScreen implements Screen {
 		fpsLabel = new Label("", game.getFont10());
 		vg.addActor(fpsLabel);
 
+		//Added for assessment 4
+		powerupLabel = new Label("", game.getFont10());
+		powerupLabel.setAlignment(1);
+		vg.addActor(powerupLabel);
+
 		table.add(vg).top();
 
 		stage.addActor(table);
@@ -200,12 +209,41 @@ public class GameScreen implements Screen {
 			mapLayers.getIndex("Trees")
         };
 
+		// Create arrays of textures for animations
+		waterFrames = new ArrayList<Texture>();
+		fireFrames = new ArrayList<Texture>();
+
+		// Create patrol texture
+		buildPatrolTextures();
+
+		for (int i = 1; i <= 3; i++) {
+			Texture texture = new Texture("waterSplash" + i + ".png");
+			waterFrames.add(texture);
+		}
+		//Added for assessment 4
+		//Build fire frame texture for minigame
+		for (int i = 1; i <= 3; i++) {
+			Texture texture = new Texture("fire" + i + ".png");
+			fireFrames.add(texture);
+		}
+
         // creates mini game sprites around the map
 		minigameSprites = new ArrayList<>();
-		minigameSprites.add(new MinigameSprite(87, 68));
-		minigameSprites.add(new MinigameSprite(30.5f, 55));
-		minigameSprites.add(new MinigameSprite(10, 92));
-		minigameSprites.add(new MinigameSprite(93, 106));
+		minigameSprites.add(new MinigameSprite(87, 68, fireFrames));
+		minigameSprites.add(new MinigameSprite(30.5f, 55, fireFrames));
+		minigameSprites.add(new MinigameSprite(10, 92, fireFrames));
+		minigameSprites.add(new MinigameSprite(93, 106, fireFrames));
+
+		//Added for assessment 4
+		// creates powerup sprites around the map
+		powerupSprites = new ArrayList<>();
+		powerupSprites.add(new PowerupSprite("ghost", this.buildPowerupTextures("ghost"), 40, 88));
+		powerupSprites.add(new PowerupSprite("replenish", this.buildPowerupTextures("replenish"),52, 38));
+		powerupSprites.add(new PowerupSprite("immunity", this.buildPowerupTextures("immunity"),103, 48));
+		powerupSprites.add(new PowerupSprite("speedUp", this.buildPowerupTextures("speedUp"),103, 93));
+		powerupSprites.add(new PowerupSprite("damageUp", this.buildPowerupTextures("damageUp"),62, 102));
+		powerupSprites.add(new PowerupSprite("random", this.buildPowerupTextures("random"),79, 15));
+		powerupSprites.add(new PowerupSprite("infiniteWater", this.buildPowerupTextures("infiniteWater"),21, 13));
 
 		// Initialise textures to use for sprites
 		Texture firestationTexture = new Texture("MapAssets/UniqueBuildings/firestation.png");
@@ -224,17 +262,6 @@ public class GameScreen implements Screen {
 		Texture mossyWetTexture = new Texture("MapAssets/UniqueBuildings/mossy_wet.png");
 
 		this.projectileTexture = new Texture("alienProjectile.png");
-
-		// Create arrays of textures for animations
-		waterFrames = new ArrayList<Texture>();
-
-		// Create patrol texture
-		buildPatrolTextures();
-
-		for (int i = 1; i <= 3; i++) {
-			Texture texture = new Texture("waterSplash" + i + ".png");
-			waterFrames.add(texture);
-		}
 
 		// ---- 4) Create entities that will be around for entire game duration - //
 
@@ -401,6 +428,12 @@ public class GameScreen implements Screen {
 			minigameSprite.update(this.game.batch);
 		}
 
+		//Added for assessment 4
+		// Render powerup sprites
+		for (PowerupSprite powerupSprite : powerupSprites) {
+			powerupSprite.update(this.game.batch);
+		}
+
 		this.firestation.update(this.game.batch);
 
 		if (DEBUG_ENABLED) firestation.drawDebug(shapeRenderer);
@@ -415,6 +448,19 @@ public class GameScreen implements Screen {
 		// Draw the score, time and FPS to the screen at given co-ordinates
 		this.scoreLabel.setText("Score: " + this.score);
 		this.timeLabel.setText("Time: " + this.getFireStationTime());
+
+		//Added for assessment 4
+		//Display all the active firetruck powerups on screen.
+		String powerupDisplayText = "";
+		for(String temp : this.getActiveTruck().getPowerupDisplay()){
+			powerupDisplayText += "\n" + temp + "\n";
+		}
+		if (this.getActiveTruck().getPowerupDisplay().size() > 0) {
+			this.powerupLabel.setText("Active Powerups:\n" + powerupDisplayText);
+		} else {
+			this.powerupLabel.setText("");
+		}
+
 		if (DEBUG_ENABLED) {
 			this.fpsLabel.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
 		} else {
@@ -573,6 +619,20 @@ public class GameScreen implements Screen {
 	 *  =======================================================================
 	 */
 	/**
+	 * Called after the minigame has been won. Removed the minigame from the
+	 * main game
+	 * @param minigameSprite the sprite to remove from the game
+	 */
+	public void removeMinigame(MinigameSprite minigameSprite) {
+		this.minigameSprites.remove(minigameSprite);
+	}
+
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
 	 * Checks if the game is in the tutorial
 	 * @return	Whether the game is in the tutorial (true) or not (false)
 	 */
@@ -649,7 +709,8 @@ public class GameScreen implements Screen {
 				ETFortress.getHealthBar().subtractResourceAmount((int) firetruck.getDamage());
 				this.score += 10;
 			}
-			if (ETFortress.isInRadius(firetruck.getCentre()) && ETFortress.canShootProjectile()) {
+			//Modified for assessment 4, enemy detection now checks if truck is invisible
+			if (ETFortress.isInRadius(firetruck.getCentre()) && ETFortress.canShootProjectile() && !firetruck.getInvisible()) {
 				Projectile projectile = new Projectile(this.projectileTexture, ETFortress.getCentreX(), ETFortress.getCentreY(), ETFortress.getType().getDamage(), this);
 				projectile.calculateTrajectory(firetruck);
 				SFX.sfx_projectile.play();
@@ -678,7 +739,8 @@ public class GameScreen implements Screen {
 				patrol.getHealthBar().subtractResourceAmount((int) firetruck.getDamage());
 				this.score += 10;
 			}
-			if (patrol.isInRadius(firetruck.getCentre()) && patrol.canShootProjectile()) {
+			//Modified for assessment 4, enemy detection now checks if truck is invisible
+			if (patrol.isInRadius(firetruck.getCentre()) && patrol.canShootProjectile() && !firetruck.getInvisible()) {
 				Projectile projectile = new Projectile(this.projectileTexture, patrol.getCentreX(), patrol.getCentreY(), 5, this);
 				projectile.calculateTrajectory(firetruck);
 				SFX.sfx_projectile.play();
@@ -691,19 +753,32 @@ public class GameScreen implements Screen {
 			}
 		}
 		// ==============================================================
-		//					Added for assessment 3
+		//		Modified for assessment 4	@author Archie Godfrey
 		// ==============================================================
-		// Checks if truck has driven over a minigame sprite
+		// Checks if truck has sprayed over a minigame sprite
 		for (int i=0; i<this.minigameSprites.size(); i++) {
 			MinigameSprite minigameSprite = this.minigameSprites.get(i);
-			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), minigameSprite.getHitBox())) {
+			if (firetruck.isInHoseRange(minigameSprite.getHitBox())) {
 				if (!isInTutorial) firestationTimer.stop();
 				popupTimer.stop();
 				ETPatrolsTimer.stop();
-				this.minigameSprites.remove(minigameSprite);
 				this.firestation.getActiveFireTruck().setSpeed(new Vector2(0, 0));
 				this.firestation.getActiveFireTruck().setHose(false);
-				this.game.setScreen(new MinigameScreen(this.game, this));
+				this.game.setScreen(new MinigameScreen(this.game, this, minigameSprite));
+			}
+		}
+
+		// ==============================================================
+		//					Added for assessment 4
+		// ==============================================================
+		// Checks if truck has driven over a Powerup sprite
+		//Activate and remove power up once driven over
+		for (int i=0; i<this.powerupSprites.size(); i++) {
+			PowerupSprite powerupSprite = this.powerupSprites.get(i);
+			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), powerupSprite.getHitBox())) {
+				this.powerupSprites.remove(powerupSprite);
+
+				powerupSprite.action(this.firestation.getActiveFireTruck());
 			}
 		}
 
@@ -711,9 +786,12 @@ public class GameScreen implements Screen {
 		for (int i=0; i<this.projectiles.size(); i++) {
 			Projectile projectile = this.projectiles.get(i);
 			if (Intersector.overlapConvexPolygons(firetruck.getDamageHitBox(), projectile.getDamageHitBox())) {
-				SFX.sfx_truck_damage.play();
-				firetruck.getHealthBar().subtractResourceAmount(projectile.getDamage());
-				if (this.score >= 10) this.score -= 10;
+				//Modified for assessment 4, damage is negated if firetruck is immune
+				if(!firetruck.getImmune()) {
+					SFX.sfx_truck_damage.play();
+					firetruck.getHealthBar().subtractResourceAmount(projectile.getDamage());
+					if (this.score >= 10) this.score -= 10;
+				}
 				this.projectiles.remove(projectile);
 			} else if (!firestation.isDestroyed() && firestation.isVulnerable() && Intersector.overlapConvexPolygons(firestation.getDamageHitBox(), projectile.getDamageHitBox())) {
 				firestation.getHealthBar().subtractResourceAmount(projectile.getDamage());
@@ -813,12 +891,24 @@ public class GameScreen implements Screen {
 	 */
 	private void buildPatrolTextures() {
 		ArrayList<Texture> patrolTextures = new ArrayList<Texture>();
-		for (int i = 99; i >= 0; i--) {
+		for (int i = 93; i >= 0; i--) {
 			String numberFormat = String.format("%03d", i);
 			Texture texture = new Texture("AlienSlices/tile" + numberFormat + ".png");
 			patrolTextures.add(texture);
 		}
 		this.patrolTextures = patrolTextures;
+	}
+
+	/**
+	 * Builds an array of textures that is used to render powerups
+	 */
+	private ArrayList<Texture> buildPowerupTextures(String type) {
+		ArrayList<Texture> powerupTextures = new ArrayList<Texture>();
+		for (int i = 32; i >= 1; i--) {
+			Texture texture = new Texture("Powerups/" + type + "/" + type + " (" + i + ").png");
+			powerupTextures.add(texture);
+		}
+		return powerupTextures;
 	}
 
 	/*
