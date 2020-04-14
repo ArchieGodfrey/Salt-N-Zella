@@ -64,6 +64,7 @@ public class MinigameScreen implements Screen {
     private boolean canSpray;
     private Vector2 clicked;
 
+    private MinigameSprite sprite;
     private final MiniGameInputHandler miniGameInputHandler;
 
     /**
@@ -73,8 +74,9 @@ public class MinigameScreen implements Screen {
      *  Changed the background image to keep the minigame more inline with the
      *  main game. Aliens now spawn in the top right window and make their way
      *  to the bottom. The player must survive for 30 seconds in order to gain
-     *     points, if the aliens reach the bottom the player loses and their
-     *                  score is set to 0 and the minigame ends.
+     *  points, if the aliens reach the bottom the player loses and their score
+     *  is set to 0 and the minigame ends. If the player wins they gain their
+     *  score and the minigame is removed from the main game.
      * 
      * Constructor for minigame screen which is called when
      * the player drives over {@link MinigameSprite} in
@@ -82,11 +84,13 @@ public class MinigameScreen implements Screen {
      *
      * @param game          to change screen and access shared batch
      * @param gameScreen    to return back to after minigame completion
+     * @param sprite        the minigame sprite that triggered the game
      */
-    public MinigameScreen(Kroy game, GameScreen gameScreen) {
+    public MinigameScreen(Kroy game, GameScreen gameScreen, MinigameSprite sprite) {
 
         this.game = game;
         this.gameScreen = gameScreen;
+        this.sprite = sprite;
 
         // Set screen dimensions
         screenWidth = Gdx.graphics.getWidth();
@@ -338,6 +342,7 @@ public class MinigameScreen implements Screen {
     public void toGameScreen(boolean win) {
         if (win) {
             gameScreen.setScore(gameScreen.getScore() + score);
+            gameScreen.removeMinigame(this.sprite);
         }
         this.game.setScreen(this.gameScreen);
         dispose();

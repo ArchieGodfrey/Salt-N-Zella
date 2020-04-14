@@ -13,7 +13,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 // Custom class import
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.misc.Constants;
 import com.misc.Arrow;
 import com.misc.ResourceBar;

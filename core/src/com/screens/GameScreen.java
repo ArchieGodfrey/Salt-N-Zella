@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.entities.Firestation;
-import com.misc.ResourceBar;
 import com.misc.SFX;
 import com.misc.SaveControls;
 import com.pathFinding.Junction;
@@ -87,7 +86,6 @@ public class GameScreen implements Screen {
 	private final ArrayList<Texture> fireFrames; //NEW
 	private final Texture projectileTexture;
 	private ArrayList<Texture> patrolTextures;
-	private ArrayList<Texture> powerupTextures;
 
 	// Objects for the patrol graph
 	final MapGraph mapGraph;
@@ -621,6 +619,20 @@ public class GameScreen implements Screen {
 	 *  =======================================================================
 	 */
 	/**
+	 * Called after the minigame has been won. Removed the minigame from the
+	 * main game
+	 * @param minigameSprite the sprite to remove from the game
+	 */
+	public void removeMinigame(MinigameSprite minigameSprite) {
+		this.minigameSprites.remove(minigameSprite);
+	}
+
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+	/**
 	 * Checks if the game is in the tutorial
 	 * @return	Whether the game is in the tutorial (true) or not (false)
 	 */
@@ -741,19 +753,18 @@ public class GameScreen implements Screen {
 			}
 		}
 		// ==============================================================
-		//					Added for assessment 3
+		//		Modified for assessment 4	@author Archie Godfrey
 		// ==============================================================
-		// Checks if truck has driven over a minigame sprite
+		// Checks if truck has sprayed over a minigame sprite
 		for (int i=0; i<this.minigameSprites.size(); i++) {
 			MinigameSprite minigameSprite = this.minigameSprites.get(i);
-			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), minigameSprite.getHitBox())) {
+			if (firetruck.isInHoseRange(minigameSprite.getHitBox())) {
 				if (!isInTutorial) firestationTimer.stop();
 				popupTimer.stop();
 				ETPatrolsTimer.stop();
-				this.minigameSprites.remove(minigameSprite);
 				this.firestation.getActiveFireTruck().setSpeed(new Vector2(0, 0));
 				this.firestation.getActiveFireTruck().setHose(false);
-				this.game.setScreen(new MinigameScreen(this.game, this));
+				this.game.setScreen(new MinigameScreen(this.game, this, minigameSprite));
 			}
 		}
 
