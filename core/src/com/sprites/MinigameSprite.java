@@ -32,7 +32,7 @@ public class MinigameSprite extends SimpleSprite {
      * @param y coordinate where the sprite spawns
      */
     public MinigameSprite(float x, float y, ArrayList<Texture> tex) {
-        super(new Texture(Gdx.files.internal("minigame.png")));
+        super(new Texture(Gdx.files.internal("empty.png")));
         this.setBounds(x*Constants.TILE_DIMS, y*Constants.TILE_DIMS, 0.5f * Constants.TILE_DIMS, 0.5f * Constants.TILE_DIMS);
         this.hitBox = new Polygon(new float[]{0,0,this.getWidth(),0,this.getWidth(),this.getHeight(),0,this.getHeight()});
         this.hitBox.setPosition(this.getX(), this.getY());
