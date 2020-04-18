@@ -341,8 +341,9 @@ public class MinigameScreen implements Screen {
      */
     public void toGameScreen(boolean win) {
         if (win) {
-            gameScreen.setScore(gameScreen.getScore() + score);
-            gameScreen.removeMinigame(this.sprite);
+            this.gameScreen.setScore(this.gameScreen.getScore() + this.score);
+            this.gameScreen.removeMinigame(this.sprite);
+            this.gameScreen.showPopupText(gameScreen.getNumberOfMinigames() + " burning buildings left to save", 1, 7);
         }
         this.game.setScreen(this.gameScreen);
         dispose();

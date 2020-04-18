@@ -200,12 +200,13 @@ public class GameScreen implements Screen {
 		// Select background and foreground map layers, order matters
         MapLayers mapLayers = map.getLayers();
         this.foregroundLayers = new int[] {
-			mapLayers.getIndex("Buildings"),
+			mapLayers.getIndex("Buildings Foreground"),
 			mapLayers.getIndex("Carpark")
         };
         this.backgroundLayers = new int[] {
 			mapLayers.getIndex("River"),
 			mapLayers.getIndex("Road"),
+			mapLayers.getIndex("Buildings"),
 			mapLayers.getIndex("Trees")
         };
 
@@ -229,10 +230,12 @@ public class GameScreen implements Screen {
 
         // creates mini game sprites around the map
 		minigameSprites = new ArrayList<>();
-		minigameSprites.add(new MinigameSprite(87, 68, fireFrames));
-		minigameSprites.add(new MinigameSprite(30.5f, 55, fireFrames));
-		minigameSprites.add(new MinigameSprite(10, 92, fireFrames));
-		minigameSprites.add(new MinigameSprite(93, 106, fireFrames));
+		minigameSprites.add(new MinigameSprite(55, 16, fireFrames));
+		minigameSprites.add(new MinigameSprite(88, 37, fireFrames));
+		minigameSprites.add(new MinigameSprite(17, 76, fireFrames));
+		minigameSprites.add(new MinigameSprite(29, 48, fireFrames));
+		minigameSprites.add(new MinigameSprite(71, 64, fireFrames));
+		minigameSprites.add(new MinigameSprite(91, 86, fireFrames));
 
 		//Added for assessment 4
 		// creates powerup sprites around the map
@@ -440,7 +443,7 @@ public class GameScreen implements Screen {
 
 		// Finish rendering
 		this.game.batch.end();
-		shapeRenderer.end();
+		if (DEBUG_ENABLED) shapeRenderer.end();
 
 		// Render map foreground layers
 		renderer.render(foregroundLayers);
@@ -1375,6 +1378,10 @@ public class GameScreen implements Screen {
 
 	public Firestation getFirestation() {
 		return this.firestation;
+	}
+
+	public int getNumberOfMinigames() {
+		return this.minigameSprites.size();
 	}
 
 	public Firetruck getActiveTruck() {return this.firestation.getActiveFireTruck();}
