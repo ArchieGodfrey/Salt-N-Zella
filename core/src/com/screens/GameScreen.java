@@ -61,7 +61,6 @@ public class GameScreen implements Screen {
 	// Private values for rendering
 	private final ShapeRenderer shapeRenderer;
 	private final OrthographicCamera camera;
-	private final ShaderProgram vignetteSepiaShader;
 
 	// Private values for tiled map
 	private final TiledMap map;
@@ -135,10 +134,6 @@ public class GameScreen implements Screen {
 		this.map = new TmxMapLoader().load("MapAssets/York_galletcity.tmx");
 		this.renderer = new OrthogonalTiledMapRenderer(map, MAP_SCALE);
 		this.shapeRenderer = new ShapeRenderer();
-
-		ShaderProgram.pedantic = false;
-		this.vignetteSepiaShader = new ShaderProgram(Gdx.files.internal("shaders/vignetteSepia.vsh"), Gdx.files.internal("shaders/vignetteSepia.fsh"));
-		this.renderer.getBatch().setShader(vignetteSepiaShader);
 
 		// Create an array to store all projectiles in motion
 		this.projectiles = new ArrayList<>();
@@ -353,18 +348,6 @@ public class GameScreen implements Screen {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		vignetteSepiaShader.begin();
-		if (isInTutorial) {
-			vignetteSepiaShader.setUniformf("u_intensity", 0.8f);
-			vignetteSepiaShader.setUniformf("u_outerRadius", 0.6f);
-			vignetteSepiaShader.setUniformf("u_sepia", 0.2f);
-		} else {
-			vignetteSepiaShader.setUniformf("u_intensity", camera.zoom-0.4f);
-			vignetteSepiaShader.setUniformf("u_outerRadius", calculateValueForProgress(0.5f, 0.8f));
-			vignetteSepiaShader.setUniformf("u_sepia", calculateValueForProgress(0.65f, 0.3f));
-		}
-		vignetteSepiaShader.end();
-
 		// ---- 1) Update camera and map properties each iteration -------- //
 
 		// Set the TiledMapRenderer view based on what the camera sees
@@ -496,9 +479,6 @@ public class GameScreen implements Screen {
 	public void resize(int width, int height) {
 		this.camera.viewportHeight = height;
 		this.camera.viewportWidth = width;
-		vignetteSepiaShader.begin();
-		vignetteSepiaShader.setUniformf("u_resolution", width, height);
-		vignetteSepiaShader.end();
 	}
 
 	/**
@@ -554,7 +534,6 @@ public class GameScreen implements Screen {
 		}
 		renderer.dispose();
 		map.dispose();
-		vignetteSepiaShader.dispose();
 		stage.dispose();
 		carparkScreen.dispose();
 		shapeRenderer.dispose();
@@ -1338,25 +1317,6 @@ public class GameScreen implements Screen {
 			popupMessages.addLast("{FADE=0;0.75;1}Pro Tip: Drive straight into a wall to perform a sick 180 flip.");
 			SFX.playGameMusic();
 		}
-	}
-
-	/*
-	 *  =======================================================================
-	 *                          Added for Assessment 3
-	 *  =======================================================================
-	 */
-	/**
-	 * Calculates the sepia and vignette values which
-	 * change as the user destroyed
-	 *
-	 * @param start	starting value at start of game
-	 * @param end	final value at end of game
-	 * @return		intensity of sepia or vignette
-	 * 				radius depending on progress
-	 */
-	private float calculateValueForProgress(float start, float end) {
-		float progress = (float) getETFortressesDestroyed()[0] / (float) getETFortressesDestroyed()[1];
-		return start - (progress*(start-end));
 	}
 
 	/**
