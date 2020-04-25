@@ -615,12 +615,34 @@ public class Firetruck extends MovementSprite {
     //Getter for finding out which power ups are currently active and returning an array of strings containing active powerups
     public ArrayList<String> getPowerupDisplay(){
         ArrayList<String> activePowerups = new ArrayList<String>();
-        if(this.powerupTimer[0]>0){activePowerups.add("Invisible " + (int) Math.floor(this.powerupTimer[0] / 100));}
-        if(this.powerupTimer[1]>0){activePowerups.add("Immune " + (int) Math.floor(this.powerupTimer[1] / 100));}
-        if(this.powerupTimer[2]>0){activePowerups.add("Replenishing " + (int) Math.floor(this.powerupTimer[2] / 100));}
-        if(this.powerupTimer[3]>0){activePowerups.add("Speed Up " + (int) Math.floor(this.powerupTimer[3] / 100));}
-        if(this.powerupTimer[4]>0){activePowerups.add("Damage Up " + (int) Math.floor(this.powerupTimer[4] / 100));}
-        if(this.powerupTimer[5]>0){activePowerups.add("Infinite Water " + (int) Math.floor(this.powerupTimer[5] / 100));}
+        ArrayList<Integer> active = getActivePowerups();
+        for(int i : active){
+            switch(i){
+                case 0:
+                    activePowerups.add("Invisible " + (int) Math.floor(this.powerupTimer[0] / 100)); break;
+                case 1:
+                    activePowerups.add("Immune " + (int) Math.floor(this.powerupTimer[1] / 100)); break;
+                case 2:
+                    activePowerups.add("Replenishing " + (int) Math.floor(this.powerupTimer[2] / 100)); break;
+                case 3:
+                    activePowerups.add("Speed Up " + (int) Math.floor(this.powerupTimer[3] / 100)); break;
+                case 4:
+                    activePowerups.add("Damage Up " + (int) Math.floor(this.powerupTimer[4] / 100)); break;
+                case 5:
+                    activePowerups.add("Infinite Water " + (int) Math.floor(this.powerupTimer[5] / 100)); break;
+            }
+        }
+        return activePowerups;
+    }
+
+    public ArrayList<Integer> getActivePowerups(){
+        ArrayList<Integer> activePowerups = new ArrayList<Integer>();
+        if(this.powerupTimer[0]>0){activePowerups.add(0);}
+        if(this.powerupTimer[1]>0){activePowerups.add(1);}
+        if(this.powerupTimer[2]>0){activePowerups.add(2);}
+        if(this.powerupTimer[3]>0){activePowerups.add(3);}
+        if(this.powerupTimer[4]>0){activePowerups.add(4);}
+        if(this.powerupTimer[5]>0){activePowerups.add(5);}
         return activePowerups;
     }
     /*
