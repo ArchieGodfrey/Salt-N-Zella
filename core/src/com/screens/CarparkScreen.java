@@ -64,12 +64,6 @@ public class CarparkScreen implements Screen {
     private final ArrayList<Label> activeStatsLabel;
     private final ArrayList<Label> activeStatsValue;
 
-    /*
-	 *  =======================================================================
-	 *       	Modified for Assessment 4		@author Archie Godfrey
-	 *  =======================================================================
-     *              Added save and load/delete buttons
-	 */
     /**
      * Constructor for car park screen
      *
