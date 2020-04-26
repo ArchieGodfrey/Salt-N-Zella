@@ -302,7 +302,6 @@ public class MainMenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				SFX.sfx_button_click.play();
 				showMenu = true;
-				showLoad = false;
 				show();
 			}
 		});
@@ -341,6 +340,7 @@ public class MainMenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				SFX.sfx_button_click.play();
 				showMenu = true;
+				showLoad = false;
 				show();
 			}
         });

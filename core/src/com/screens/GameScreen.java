@@ -233,13 +233,13 @@ public class GameScreen implements Screen {
 		//Added for assessment 4
 		// creates powerup sprites around the map
 		powerupSprites = new ArrayList<>();
-		powerupSprites.add(new PowerupSprite("ghost", this.buildPowerupTextures("ghost"), 40, 88));
-		powerupSprites.add(new PowerupSprite("replenish", this.buildPowerupTextures("replenish"),52, 38));
-		powerupSprites.add(new PowerupSprite("immunity", this.buildPowerupTextures("immunity"),103, 48));
-		powerupSprites.add(new PowerupSprite("speedUp", this.buildPowerupTextures("speedUp"),103, 93));
-		powerupSprites.add(new PowerupSprite("damageUp", this.buildPowerupTextures("damageUp"),62, 102));
-		powerupSprites.add(new PowerupSprite("random", this.buildPowerupTextures("random"),79, 15));
-		powerupSprites.add(new PowerupSprite("infiniteWater", this.buildPowerupTextures("infiniteWater"),21, 13));
+		powerupSprites.add(new PowerupSprite("ghost", this.buildPowerupTextures("ghost"), 40, 88, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("replenish", this.buildPowerupTextures("replenish"),52, 38, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("immunity", this.buildPowerupTextures("immunity"),103, 48, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("speedUp", this.buildPowerupTextures("speedUp"),103, 93, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("damageUp", this.buildPowerupTextures("damageUp"),62, 102, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("random", this.buildPowerupTextures("random"),79, 15, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("infiniteWater", this.buildPowerupTextures("infiniteWater"),21, 13, this.game.getDifficulty()));
 
 		//Added for assessment 4
 		// creates a texture array of all powerup icons for drawing on hud

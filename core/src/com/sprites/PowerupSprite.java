@@ -28,7 +28,7 @@ public class PowerupSprite extends Sprite {
     private final ArrayList<Texture> powerupSlices;
 
     // Effect duration
-    private int activeTime = 600; //10 seconds
+    private int activeTime;
     
     // Effect type
     private String type;
@@ -40,13 +40,14 @@ public class PowerupSprite extends Sprite {
      * @param x coordinate where the sprite spawns
      * @param y coordinate where the sprite spawns
      */
-    public PowerupSprite(String type, ArrayList<Texture> textureSlices, float x, float y) {
+    public PowerupSprite(String type, ArrayList<Texture> textureSlices, float x, float y,int difficulty) {
         super(new Texture(Gdx.files.internal("powerup.png")));
         this.setBounds(x*Constants.TILE_DIMS, y*Constants.TILE_DIMS, 1.5f * 4, 1.5f * Constants.TILE_DIMS);
         this.hitBox = new Polygon(new float[]{0,0,this.getWidth(),0,this.getWidth(),this.getHeight(),0,this.getHeight()});
         this.hitBox.setPosition(this.getX(), this.getY());
         this.type = type;
         this.powerupSlices = textureSlices;
+        this.activeTime = 1200 / difficulty;
     }
 
     /**

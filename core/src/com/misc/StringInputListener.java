@@ -19,9 +19,9 @@ public class StringInputListener implements TextInputListener {
     /**
      * The contructor of the input listener, gathers information that it
      * can be called when the player has finished entering a string
-     * @param gameScreen    The current gamescreen containing the save controls
+     * @param saveControls  The save controls needed to change the save file name
      * @param button        The button's text with the player's input
-     * @param saveNumber    The save number that is being modified
+     * @param saveCom       The save number that is being modified
      */
     public StringInputListener(SaveControls saveControls, TextButton button, int saveNumber) {
         this.button = button;
