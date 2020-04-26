@@ -29,6 +29,10 @@ public class PowerupSprite extends Sprite {
 
     // Effect duration
     private int activeTime;
+
+    // Effect timeout
+    private int timeout;
+    private int maxTimeout;
     
     // Effect type
     private String type;
@@ -47,7 +51,9 @@ public class PowerupSprite extends Sprite {
         this.hitBox.setPosition(this.getX(), this.getY());
         this.type = type;
         this.powerupSlices = textureSlices;
-        this.activeTime = 1200 / difficulty;
+        this.activeTime = 1000 / difficulty;
+        this.timeout = 0;
+        this.maxTimeout = 1600 * difficulty;
     }
 
     /**
@@ -60,8 +66,11 @@ public class PowerupSprite extends Sprite {
         //Rotate the sprite by factor
         int rotateSpd = 1;
         rotate(rotateSpd);
-
-        drawVoxelImage(batch);
+        if (this.timeout > 0) {
+            this.timeout -= 1;
+        } else {
+            drawVoxelImage(batch);
+        }
     }
 
     /**
@@ -69,7 +78,7 @@ public class PowerupSprite extends Sprite {
      * @param activeFireTruck   The active truck to apply the effect to
      */
     public void action(Firetruck activeFireTruck){
-        if (type == "random") {
+        if (type == "random" && this.timeout <= 0) {
             int random = (int)(Math.random() * 4.4);
             switch(random){
                 case 0:
@@ -88,8 +97,10 @@ public class PowerupSprite extends Sprite {
                     activeFireTruck.setPowerup(activeTime, "damageUp");
                     break;
             }
-        } else {
+            this.timeout = this.maxTimeout;
+        } else if (this.timeout <= 0) {
             activeFireTruck.setPowerup(activeTime, type);
+            this.timeout = this.maxTimeout;
         }
     }
 

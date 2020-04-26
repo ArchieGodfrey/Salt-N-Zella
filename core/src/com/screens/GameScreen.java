@@ -781,8 +781,6 @@ public class GameScreen implements Screen {
 		for (int i=0; i<this.powerupSprites.size(); i++) {
 			PowerupSprite powerupSprite = this.powerupSprites.get(i);
 			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), powerupSprite.getHitBox())) {
-				this.powerupSprites.remove(powerupSprite);
-
 				powerupSprite.action(this.firestation.getActiveFireTruck());
 			}
 		}
