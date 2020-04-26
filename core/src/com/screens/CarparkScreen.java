@@ -356,7 +356,7 @@ public class CarparkScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
-        camera.update();
+        camera.setToOrtho(false, width, height);
     }
 
     /**

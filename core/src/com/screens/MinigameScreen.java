@@ -207,8 +207,7 @@ public class MinigameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        camera.viewportHeight = height;
-        camera.viewportWidth = width;
+        camera.setToOrtho(false, width, height);
         setScreenDimensions(width, height);
     }
 

@@ -7,18 +7,20 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 // Class imports
 import com.Kroy;
 import com.misc.SFX;
 
-import static com.misc.Constants.DEBUG_ENABLED;
+import static com.misc.Constants.*;
 
 import java.util.ArrayList;
 
@@ -99,7 +101,7 @@ public class MainMenuScreen implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		viewport.update(width, height);
-        camera.update();
+		camera.setToOrtho(false, width, height);
 	}
 
 	/**
