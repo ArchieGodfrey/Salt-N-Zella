@@ -351,14 +351,7 @@ public class MainMenuScreen implements Screen {
             saveTextButtons.get(i).addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    warning = "Are you sure you want to load a new game? \n\n Unsaved progress will be lost";
-                    continueCallback = new Runnable() {
-                        @Override
-                        public void run() {
-                            game.loadGameFromSave(index);
-                        }
-                    };
-                    show();  
+                    game.loadGameFromSave(index); 
                 }
             });
             saveDeleteButtons.get(i).addListener(new ClickListener(){

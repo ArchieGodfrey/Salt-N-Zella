@@ -1297,7 +1297,7 @@ public class GameScreen implements Screen {
 
 	/*
 	 *  =======================================================================
-	 *        Modified for Assessment 3		@author Archie Godfrey
+	 *        Modified for Assessment 4		@author Archie Godfrey
 	 *  =======================================================================
 	 * 	Stopped resetting stats and position if loading from a save file
 	 */
@@ -1327,6 +1327,7 @@ public class GameScreen implements Screen {
 				firestation.getActiveFireTruck().setHose(false);
 			} else {
 				SaveFile saveFile = this.game.getSaveControls().getSaveFile();
+				this.game.setDifficulty(saveFile.difficulty);
 				this.time = saveFile.time;
 				this.score = saveFile.score;
 				this.firestation.parkFireTruck(this.getActiveTruck());
