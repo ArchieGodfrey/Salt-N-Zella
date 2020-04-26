@@ -44,8 +44,12 @@ public class PauseScreen implements Screen {
     private final Viewport viewport;
     private final Stage stage;
 
-    // Whether the menu or load options are showing
+    // Whether the menu or save options are showing
     private boolean showMenu;
+
+    // Controls warning message
+    private String warning;
+    private Runnable continueCallback;
     
     private VerticalGroup saveGroup;
     private ArrayList<TextButton> saveTextButtons;
@@ -65,7 +69,10 @@ public class PauseScreen implements Screen {
 		skin = game.getSkin();
 		
 		// Show the menu options
-		showMenu = true;
+        showMenu = true;
+        
+        // Initialise warning message
+        warning = "";
 
 		// Create an orthographic camera
 		camera = new OrthographicCamera();
@@ -113,7 +120,6 @@ public class PauseScreen implements Screen {
         Label timeLabel = new Label("Time: " + gameScreen.getFireStationTime(), new Label.LabelStyle(game.coolFont, Color.WHITE));
         labels.addActor(timeLabel);
 
-        //buttonTable.row().expand().center();
         buttonTable.add(label).padBottom(20);
         buttonTable.row();
         toggleMenuButtons(this.showMenu, buttonTable);
@@ -144,11 +150,13 @@ public class PauseScreen implements Screen {
 	*					and then the difficulty options
 	*/
 	private void toggleMenuButtons(boolean show, Table buttonTable) {
-		if (show) {
+		if (show && warning.length() == 0) {
 			createMenuOptions(buttonTable);
-		} else {
+		} else if (warning.length() == 0) {
 			createDifficultyOptions(buttonTable);
-		}
+		} else {
+            createWarning(buttonTable);
+        }
 	}
 
 	/**
@@ -207,9 +215,16 @@ public class PauseScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 SFX.sfx_button_click.play();
-                game.setScreen(new MainMenuScreen(game));
-                gameScreen.dispose();
-                dispose();
+                warning = "Are you sure you want to return to the main menu? \n\n Unsaved progress will be lost";
+                continueCallback = new Runnable() {
+                    @Override
+                    public void run() {
+                        game.setScreen(new MainMenuScreen(game));
+                        gameScreen.dispose();
+                        dispose();
+                    }
+                };
+                show();
             }
         });
 	}
@@ -258,15 +273,31 @@ public class PauseScreen implements Screen {
             saveTextButtons.get(i).addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.loadGameFromSave(index);
+                    warning = "Are you sure you want to load a new game? \n\n Unsaved progress will be lost";
+                    continueCallback = new Runnable() {
+                        @Override
+                        public void run() {
+                            game.loadGameFromSave(index);
+                        }
+                    };
+                    show();  
                 }
             });
             saveOptionButtons.get(i).addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    gameScreen.saveGame(index);
-                    if (gameScreen.getSaveControls().getCurrentSaveNumber() != index) {
-                        game.getSaveControls().setCurrentSaveNumber(index);
+                    if (!gameScreen.getSaveControls().checkIfSaveEmpty(index)) {
+                        warning = "You are about to overwrite an\n existing save file? \n\n This cannot be undone";
+                        continueCallback = new Runnable() {
+                            @Override
+                            public void run() {
+                                gameScreen.saveGame(index);
+                                if (gameScreen.getSaveControls().getCurrentSaveNumber() != index) {
+                                    game.getSaveControls().setCurrentSaveNumber(index);
+                                }
+                                show();
+                            }
+                        };
                     }
                     show();
                 }
@@ -274,7 +305,14 @@ public class PauseScreen implements Screen {
             saveDeleteButtons.get(i).addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    game.getSaveControls().deleteSave(index);
+                    warning = "Are you sure you want to delete this save? \n\n This cannot be undone";
+                    continueCallback = new Runnable() {
+                        @Override
+                        public void run() {
+                            game.getSaveControls().deleteSave(index);
+                            show();
+                        }
+                    };
                     show();
                 }
             });
@@ -314,12 +352,12 @@ public class PauseScreen implements Screen {
                 } else {
                     textButton.setText("   Load Save   ");
                     optionButton.setText("   Overwrite   ");
-                    optionButton.setColor(Color.RED);
+                    optionButton.setColor(Color.ORANGE);
                 }
             }
-            optionButton.setSize(275,180);
-            textButton.setSize(275,180);
-            deleteButton.setSize(275,180);
+            optionButton.pad(10).padTop(5).padBottom(5);
+            textButton.pad(10).padTop(5).padBottom(5);
+            deleteButton.pad(10).padTop(5).padBottom(5);
             saveOptionButtons.add(optionButton);
             saveTextButtons.add(textButton);
             saveDeleteButtons.add(deleteButton);
@@ -345,7 +383,7 @@ public class PauseScreen implements Screen {
             final int index = i + 1;
 
             TextButton nameButton = new TextButton(this.gameScreen.getSaveControls().getSaveName(index), skin);
-            nameButton.setSize(200, 40);
+            nameButton.pad(10).padTop(5).padBottom(5);
             nameButton.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -373,6 +411,57 @@ public class PauseScreen implements Screen {
             stack.addActor(vgSave);
             saveGroup.addActor(stack);
         }
+    }
+
+    /*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+    /**
+     * Renders a warning message with a cancel and continue button
+     * @param buttonTable   The table to draw the message to
+     */
+    private void createWarning(Table buttonTable) {
+        // Create warning message
+        Label message = new Label(warning, new Label.LabelStyle(game.coolFont, Color.WHITE));
+        message.setFontScale(1.1f);
+        message.setAlignment(1);
+
+        // Create menu buttons
+        HorizontalGroup buttons = new HorizontalGroup();
+        TextButton continueButton = new TextButton("Continue", skin);
+        continueButton.pad(15).padTop(8).padBottom(8);
+        TextButton cancelButton = new TextButton("Cancel", skin);
+        cancelButton.pad(15).padTop(8).padBottom(8);
+        buttons.addActor(cancelButton);
+        buttons.space(200);
+        buttons.addActor(continueButton);
+        buttons.setPosition(0, 0);
+
+        // Add buttons to table
+        buttonTable.center();
+        buttonTable.add(message).padBottom(40);
+        buttonTable.row();
+        buttonTable.add(buttons).padBottom(40);
+
+        // Add listeners that run callbacks on press
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                SFX.sfx_button_click.play();
+                warning = "";
+                show();
+            }
+        });
+		continueButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+                SFX.sfx_button_click.play();
+                warning = "";
+				continueCallback.run();
+			}
+		});
     }
 
     /**
