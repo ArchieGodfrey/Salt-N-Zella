@@ -38,7 +38,6 @@ public class Kroy extends Game {
 	 * Create fields that will be needed at runtime and then display the main menu screen upon game start.
 	 */
 	public void create() {
-		Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		this.difficulty = 1;
 		this.saveControls = new SaveControls();
 		this.setFonts();

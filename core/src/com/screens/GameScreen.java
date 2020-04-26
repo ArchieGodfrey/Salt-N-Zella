@@ -1,7 +1,6 @@
 package com.screens;
 
 // LibGDX imports
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -13,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.entities.Firestation;
 import com.misc.SFX;
 import com.misc.SaveControls;
+import com.misc.SaveControls.SaveFile;
 import com.pathFinding.Junction;
 import com.pathFinding.MapGraph;
 import com.badlogic.gdx.Gdx;
@@ -196,13 +196,13 @@ public class GameScreen implements Screen {
         MapLayers mapLayers = map.getLayers();
         this.foregroundLayers = new int[] {
 			mapLayers.getIndex("Buildings Foreground"),
-			mapLayers.getIndex("Carpark")
+			mapLayers.getIndex("Carpark"),
+			mapLayers.getIndex("Trees")
         };
         this.backgroundLayers = new int[] {
 			mapLayers.getIndex("River"),
 			mapLayers.getIndex("Road"),
-			mapLayers.getIndex("Buildings"),
-			mapLayers.getIndex("Trees")
+			mapLayers.getIndex("Buildings")
         };
 
 		// Create arrays of textures for animations
@@ -318,7 +318,7 @@ public class GameScreen implements Screen {
 			}
 		}, 7,10);
 
-		// Update the tutotial mode
+		// Update the tutorial mode
 		isInTutorial = true;
 		if (!isTutorial) this.finishTutorial();
 	}
@@ -409,15 +409,17 @@ public class GameScreen implements Screen {
 			if (DEBUG_ENABLED) patrol.drawDebug(shapeRenderer);
 		}
 
-		// Render mini game sprites
-		for (MinigameSprite minigameSprite : minigameSprites) {
-			minigameSprite.update(this.game.batch);
-		}
+		if (!isInTutorial) {
+			// Render mini game sprites
+			for (MinigameSprite minigameSprite : minigameSprites) {
+				minigameSprite.update(this.game.batch);
+			}
 
-		//Added for assessment 4
-		// Render powerup sprites
-		for (PowerupSprite powerupSprite : powerupSprites) {
-			powerupSprite.update(this.game.batch);
+			//Added for assessment 4
+			// Render powerup sprites
+			for (PowerupSprite powerupSprite : powerupSprites) {
+				powerupSprite.update(this.game.batch);
+			}
 		}
 
 		this.firestation.update(this.game.batch);
@@ -1296,18 +1298,19 @@ public class GameScreen implements Screen {
 			popupMessages.clear();
 			showPopupText("Good luck!", 1, 5);
 			firestationTimer.start();
-			// If loading from a save file
+			// If not loading from a save file
 			if (this.game.getSaveControls().getCurrentSaveNumber() == 0) {
 				firestation.getActiveFireTruck().getWaterBar().resetResourceAmount();
 				firestation.getActiveFireTruck().setRespawnLocation(0);
 				firestation.getActiveFireTruck().respawn();
 				firestation.getActiveFireTruck().setHose(false);
 			} else {
-				this.time = this.game.getSaveControls().getSaveFile().time;
-				this.score = this.game.getSaveControls().getSaveFile().score;
+				SaveFile saveFile = this.game.getSaveControls().getSaveFile();
+				this.time = saveFile.time;
+				this.score = saveFile.score;
 				this.firestation.parkFireTruck(this.getActiveTruck());
 				this.firestation.setActiveFireTruck(
-					this.firestation.getFiretruckByType(this.game.getSaveControls().getSaveFile().activeFireTruckType)
+					this.firestation.getFiretruckByType(saveFile.activeFireTruckType)
 				);
 			}
 			this.ETPatrols.clear();

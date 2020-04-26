@@ -39,7 +39,6 @@ public class SaveControlsTest {
         try {
             Path paths = Paths.get("Save1.json");
             Reader reader = Files.newBufferedReader(paths);
-            // TODO
             //assertEquals(reader, new String(`{"empty":false,"firetrucks":[{"type":"BLUE","health":10,"respawnLocation":1.0},{"type":"RED","health":10,"respawnLocation":1.0},{"type":"YELLOW","health":10,"respawnLocation":1.0},{"type":"GREEN","health":10,"respawnLocation":1.0}]}`));
         } catch (IOException e) {
             System.out.println(e);

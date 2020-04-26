@@ -40,6 +40,8 @@ public class SaveControls {
      * The format of a save file
      */
     public class SaveFile {
+        // The name of the save file
+        public String name;
         // Whether the file is empty or not
         public boolean empty;
         // The saved game score
@@ -62,9 +64,10 @@ public class SaveControls {
             this.empty = true;
         };
         // Overloaded constructor, creates a full save file
-        public SaveFile(int score, int time, int difficulty, int firestationHealth, Constants.TruckType activeFireTruckType, ArrayList<SavedFiretruck> firetrucks, ArrayList<SavedFortress> ETFortresses) {
+        public SaveFile(String name, int score, int time, int difficulty, int firestationHealth, Constants.TruckType activeFireTruckType, ArrayList<SavedFiretruck> firetrucks, ArrayList<SavedFortress> ETFortresses) {
             this.firetrucks = firetrucks;
             this.empty = false;
+            this.name = name;
             this.score = score;
             this.time = time;
             this.difficulty = difficulty;
@@ -87,17 +90,23 @@ public class SaveControls {
         public int water;
         // The saved respawn location
         public Constants.CarparkEntrances respawnLocation;
+        // The saved x position
+        public float x;
+        // The saved y position
+        public float y;
         // If the truck has been purchased
         public boolean isBought;
 
         // Default constructor, creates an empty firetruck save
         public SavedFiretruck() {};
         // Overloaded constructor, creates a full firetruck save
-        public SavedFiretruck(Constants.TruckType type, int health, int water, Constants.CarparkEntrances respawnLocation, boolean isBought) {
+        public SavedFiretruck(Constants.TruckType type, int health, int water, Constants.CarparkEntrances respawnLocation, float x, float y, boolean isBought) {
             this.health = health;
             this.water = water;
             this.respawnLocation = respawnLocation;
             this.type = type;
+            this.x = x;
+            this.y = y;
             this.isBought = isBought;
         }
     }
@@ -107,7 +116,7 @@ public class SaveControls {
      * properties needed to re-create the class
     **/
     public class SavedFortress {
-        // The idetifier of the truck
+        // The identifier of the fortress
         public Constants.FortressType type;
         // The saved health
         public int health;
@@ -150,10 +159,12 @@ public class SaveControls {
         // Gets the active truck
         Firetruck activeTruck = firestation.getActiveFireTruck();
         // Add the active truck to the list
-        savedFiretrucks.add(new SavedFiretruck(activeTruck.getType(),
+        savedFiretrucks.add(new SavedFiretruck(
+            activeTruck.getType(),
             activeTruck.getHealthBar().getCurrentAmount(),
             activeTruck.getWaterBar().getCurrentAmount(),
             activeTruck.getCarpark(),
+            activeTruck.getX(), activeTruck.getY(),
             activeTruck.isBought()
         ));
         // Add the remaining trucks to the list
@@ -163,6 +174,7 @@ public class SaveControls {
                 firetruck.getHealthBar().getCurrentAmount(),
                 firetruck.getWaterBar().getCurrentAmount(),
                 firetruck.getCarpark(),
+                firetruck.getX(), firetruck.getY(), 
                 firetruck.isBought()
             ));
         }
@@ -178,7 +190,7 @@ public class SaveControls {
         }
         // Create a new save file
         SaveFile saveFile = new SaveFile(
-            score, time, difficulty,
+            getSaveName(saveNumber), score, time, difficulty,
             firestation.getHealthBar().getCurrentAmount(),
             activeTruck.getType(),
             savedFiretrucks, savedFortresses
@@ -280,6 +292,36 @@ public class SaveControls {
             toBeChecked = new SaveFile();
         }
         return toBeChecked.empty;
+    }
+
+    /**
+     * Gets the name of a save file
+     * @param saveNumber The save number to check
+     * @return           The name of the savefile
+     */
+    public String getSaveName(int saveNumber) {
+        try {
+            SaveFile save = readSaveFromFile(saveNumber);
+            return save.name;
+        } catch (IOException e) {
+            System.out.println("Unable to read save name");
+            return "Save " + saveNumber;
+        }
+    }
+
+    /**
+     * Sets the name of a save file
+     * @param saveNumber The save number to change
+     * @param name       The name of the savefile
+     */
+    public void setSaveName(int saveNumber, String name) {
+        try {
+            SaveFile saveFile = readSaveFromFile(saveNumber);
+            saveFile.name = name;
+            writeSaveToFile(saveNumber, saveFile);
+        } catch (IOException e) {
+            System.out.println("Unable to change save name");
+        }
     }
 
     /**
