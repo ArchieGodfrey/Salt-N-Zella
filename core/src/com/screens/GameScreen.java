@@ -3,10 +3,7 @@ package com.screens;
 // LibGDX imports
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.entities.Firestation;
@@ -78,6 +75,7 @@ public class GameScreen implements Screen {
 	private final ArrayList<Projectile> projectiles;
 	private final ArrayList<MinigameSprite> minigameSprites;
 	private final ArrayList<PowerupSprite> powerupSprites;
+	private final ArrayList<Texture> powerupIcons;
 	private ArrayList<Projectile> projectilesToRemove;
 	private final ArrayList<Patrol> ETPatrols;
 	private final Firestation firestation;
@@ -242,6 +240,17 @@ public class GameScreen implements Screen {
 		powerupSprites.add(new PowerupSprite("damageUp", this.buildPowerupTextures("damageUp"),62, 102));
 		powerupSprites.add(new PowerupSprite("random", this.buildPowerupTextures("random"),79, 15));
 		powerupSprites.add(new PowerupSprite("infiniteWater", this.buildPowerupTextures("infiniteWater"),21, 13));
+
+		//Added for assessment 4
+		// creates a texture array of all powerup icons for drawing on hud
+		powerupIcons = new ArrayList<>();
+		powerupIcons.add(new Texture(Gdx.files.internal("ghost.png")));
+		powerupIcons.add(new Texture(Gdx.files.internal("immunity.png")));
+		powerupIcons.add(new Texture(Gdx.files.internal("replenish.png")));
+		powerupIcons.add(new Texture(Gdx.files.internal("speedUp.png")));
+		powerupIcons.add(new Texture(Gdx.files.internal("damageUp.png")));
+		powerupIcons.add(new Texture(Gdx.files.internal("infiniteWater.png")));
+
 
 		// Initialise textures to use for sprites
 		Texture firestationTexture = new Texture("MapAssets/UniqueBuildings/firestation.png");
@@ -437,14 +446,27 @@ public class GameScreen implements Screen {
 		this.scoreLabel.setText("Score: " + this.score);
 		this.timeLabel.setText("Time: " + this.getFireStationTime());
 
+
+
 		//Added for assessment 4
-		//Display all the active firetruck powerups on screen.
-		String powerupDisplayText = "";
-		for(String temp : this.getActiveTruck().getPowerupDisplay()){
-			powerupDisplayText += "\n" + temp + "\n";
-		}
+		//Display all the active firetruck powerups on screen with their respective icon.
 		if (this.getActiveTruck().getPowerupDisplay().size() > 0) {
+
+			String powerupDisplayText = "";
+			for(String temp : this.getActiveTruck().getPowerupDisplay()){
+				powerupDisplayText += "\n" + temp + "\n";
+			}
 			this.powerupLabel.setText("Active Powerups:\n" + powerupDisplayText);
+
+			//Draw each icon next to the powerup text
+			ArrayList<Integer> active = this.getActiveTruck().getActivePowerups();
+			int j = 0;
+			for(int i : active){
+				j++;
+				stage.getBatch().begin();
+				stage.getBatch().draw(powerupIcons.get(i), this.camera.viewportWidth*0.76f, this.camera.viewportHeight*0.89f-(j*49), 512*0.07f, 512*0.07f);
+				stage.getBatch().end();
+			}
 		} else {
 			this.powerupLabel.setText("");
 		}
