@@ -192,8 +192,8 @@ public class MinigameScreen implements Screen {
 
         drawWater();
 
-        game.coolFont.draw(game.spriteBatch, "Minigame Score: " + score, 25, 100);
-        game.coolFont.draw(game.spriteBatch, "Time Remaining: " + time, screenWidth - 250, 100);
+        game.coolFont.draw(game.spriteBatch, "Minigame Score: " + score, 25, screenHeight - 50);
+        game.coolFont.draw(game.spriteBatch, "Time Remaining: " + time, screenWidth - 250, screenHeight - 50);
 
         game.spriteBatch.end();
 
@@ -255,8 +255,8 @@ public class MinigameScreen implements Screen {
 
             if (alien.getBoundingRectangle().contains(clicked)) {
                 score += alien.getScore();
-                if (this.currentRowSpawn > 1) {
-                    this.currentRowSpawn -= 1;
+                if (this.currentRowSpawn > 2) {
+                    this.currentRowSpawn -= 2;
                 }
                 onScreenETs.remove(alien);
             }
