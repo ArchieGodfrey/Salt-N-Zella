@@ -64,10 +64,6 @@ public class CarparkScreen implements Screen {
     private final ArrayList<Label> activeStatsLabel;
     private final ArrayList<Label> activeStatsValue;
 
-    private final VerticalGroup saveGroup;
-    private final ArrayList<TextButton> saveTextButtons;
-    private final ArrayList<TextButton> saveOptionButtons;
-
     /*
 	 *  =======================================================================
 	 *       	Modified for Assessment 4		@author Archie Godfrey
@@ -104,8 +100,6 @@ public class CarparkScreen implements Screen {
 
         // create background image
         Image background = new Image(new Texture(Gdx.files.internal("garage.jpg")));
-        background.setWidth(Gdx.graphics.getWidth());
-        background.setHeight(Gdx.graphics.getHeight());
 
         // create tables
         Table mainTable = new Table(); // stores everything in
@@ -137,13 +131,6 @@ public class CarparkScreen implements Screen {
         // preview row
         mainTable.row().expand();
 
-        // The vertical group to store the save buttons
-        Stack saveStack = new Stack();
-        saveGroup = new VerticalGroup();
-        saveOptionButtons = new ArrayList<>();
-        saveTextButtons = new ArrayList<>();
-        generateSaveButtons();
-
         // background shape behind stats table
         Stack previewStack = new Stack();
         previewStack.add(new BackgroundBox(300, 300, Color.DARK_GRAY, 10));
@@ -161,9 +148,7 @@ public class CarparkScreen implements Screen {
 
         // Store the save group and preview group in their own stacks
         // then combine then into one table and add that to the main table
-        saveStack.add(saveGroup);
         previewStack.add(previewGroup);
-        saveAndPreviewTable.add(saveStack);
         saveAndPreviewTable.add(previewStack);
         mainTable.add(saveAndPreviewTable);
 
@@ -202,12 +187,6 @@ public class CarparkScreen implements Screen {
         stage.addActor(mainTable);
     }
 
-    /*
-	 *  =======================================================================
-	 *       	Modified for Assessment 4		@author Archie Godfrey
-	 *  =======================================================================
-     *        Added save and load/delete buttons to the side of the menu
-	 */
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
      */
@@ -246,49 +225,6 @@ public class CarparkScreen implements Screen {
             }
         });
 
-        // Only allow saves when in the main game
-        if (!this.gameScreen.isInTutorial()) {
-            // Create save buttons
-            generateSaveButtons();
-            generateSaveSelector();
-            // Add save and load save functionality
-            for (int i = 0; i < 3; i++) {
-                int index = i + 1;
-                saveOptionButtons.get(i).addListener(new ClickListener(){
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        gameScreen.saveGame(index);
-                        if (gameScreen.getSaveControls().getCurrentSaveNumber() != index) {
-                            game.getSaveControls().setCurrentSaveNumber(index);
-                        }
-                        show();
-                    }
-                });
-                saveTextButtons.get(i).addListener(new ClickListener(){
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        if (gameScreen.getSaveControls().getCurrentSaveNumber() == index) {
-                            game.getSaveControls().deleteSave(index);
-                        }
-                        game.loadGameFromSave(index);
-                    }
-                    @Override
-                    public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                        if (gameScreen.getSaveControls().getCurrentSaveNumber() == index) {
-                            saveTextButtons.get(index - 1).setText("  Delete Save ");
-                            saveTextButtons.get(index - 1).setColor(Color.RED);
-                        }
-                    }
-                    @Override
-                    public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                        if (gameScreen.getSaveControls().getCurrentSaveNumber() == index) {
-                            saveTextButtons.get(index - 1).setText("Current Save");
-                            saveTextButtons.get(index - 1).setColor(Color.LIGHT_GRAY);
-                        }
-                    }
-                });
-            }
-        }
 
         for (int i = 0; i< firestation.getParkedFireTrucks().size(); i++) {
             int index = i;
@@ -476,76 +412,6 @@ public class CarparkScreen implements Screen {
             selectLocationLabels.add(title);
             selectImageButtons.add(imageButton);
             selectTextButtons.add(textButton);
-        }
-    }
-
-    /*
-	 *  =======================================================================
-	 *       	Added for Assessment 4		@author Archie Godfrey
-	 *  =======================================================================
-	 */
-    /**
-     * Builds each save file item which contains:
-     * - save option button (save or overwrite)
-     * - text button (empty or load)
-     */
-    private void generateSaveButtons() {
-        saveOptionButtons.clear();
-        saveTextButtons.clear();
-        for (int i=1; i <= 3; i++) {
-            boolean emptySave = this.gameScreen.getSaveControls().checkIfSaveEmpty(i);
-
-            TextButton optionButton = new TextButton("", skin);
-            TextButton textButton = new TextButton("", skin);
-            optionButton.setText("  Save Game  ");
-            optionButton.setColor(Color.GREEN);
-
-            if (emptySave) {
-                textButton.setText("  Empty Save  ");
-                textButton.setColor(Color.DARK_GRAY);
-            } else {
-                if (this.gameScreen.getSaveControls().getCurrentSaveNumber() == i) {
-                    textButton.setText("Current Save");
-                    textButton.setColor(Color.LIGHT_GRAY);
-                } else {
-                    textButton.setText(" Load Save " + i + " ");
-                    optionButton.setText("   Overwrite   ");
-                    optionButton.setColor(Color.RED);
-                }
-            }
-            optionButton.setSize(175,40);
-            textButton.setSize(175,40);
-            saveOptionButtons.add(optionButton);
-            saveTextButtons.add(textButton);
-        }
-    }
-
-    /*
-	 *  =======================================================================
-	 *       	Added for Assessment 4		@author Archie Godfrey
-	 *  =======================================================================
-	 */
-    /**
-     * Builds the save selector section of the screen
-     * it is called once the screen is opened
-     */
-    private void generateSaveSelector() {
-        saveGroup.clear();
-        saveGroup.pad(20);
-        saveGroup.expand();
-        saveGroup.left();
-        saveGroup.space(15);
-        for (int i=0; i <= 2; i++) {
-            Stack stack = new Stack();
-            VerticalGroup vgSave = new VerticalGroup();
-            vgSave.center();
-            vgSave.pad(5);
-            vgSave.addActor(saveTextButtons.get(i));
-            vgSave.space(5);
-            vgSave.addActor(saveOptionButtons.get(i));
-            stack.addActor(new BackgroundBox(200, 100, Color.GRAY, 10));
-            stack.addActor(vgSave);
-            saveGroup.addActor(stack);
         }
     }
 
