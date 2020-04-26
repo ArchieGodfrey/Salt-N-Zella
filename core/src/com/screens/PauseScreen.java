@@ -104,7 +104,7 @@ public class PauseScreen implements Screen {
         Table buttonTable = new Table();
         buttonTable.center();
 
-        Image bcg = new Image(new Texture(Gdx.files.internal("menu_bg_2.png")));
+        Image bcg = new Image(new Texture(Gdx.files.internal("Minigame/minigame_bg_blue.png")));
 		Stack bcgstack = new Stack();
         bcgstack.setFillParent(true);
 		bcgstack.add(bcg);
