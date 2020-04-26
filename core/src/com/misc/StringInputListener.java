@@ -2,7 +2,6 @@ package com.misc;
 
 import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.screens.GameScreen;
 
 /**
  * A class to produce a popup allowing the player to enter
@@ -15,7 +14,7 @@ public class StringInputListener implements TextInputListener {
 
     private TextButton button;
     private int saveNumber;
-    private GameScreen gameScreen;
+    private SaveControls saveControls;
 
     /**
      * The contructor of the input listener, gathers information that it
@@ -24,10 +23,10 @@ public class StringInputListener implements TextInputListener {
      * @param button        The button's text with the player's input
      * @param saveNumber    The save number that is being modified
      */
-    public StringInputListener(GameScreen gameScreen, TextButton button, int saveNumber) {
+    public StringInputListener(SaveControls saveControls, TextButton button, int saveNumber) {
         this.button = button;
         this.saveNumber = saveNumber;
-        this.gameScreen = gameScreen;
+        this.saveControls = saveControls;
     }
 
     /**
@@ -36,8 +35,10 @@ public class StringInputListener implements TextInputListener {
      */
     @Override
     public void input(String text) {
-        button.setText(text);
-        gameScreen.getSaveControls().setSaveName(saveNumber, text);
+        if (text.length() > 0) {
+            button.setText(text);
+            saveControls.setSaveName(saveNumber, text);
+        }
     }
 
     /**

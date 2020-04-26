@@ -7,18 +7,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 // Class imports
 import com.Kroy;
+import com.misc.BackgroundBox;
 import com.misc.SFX;
+import com.misc.StringInputListener;
 
 import static com.misc.Constants.*;
 
@@ -42,8 +41,17 @@ public class MainMenuScreen implements Screen {
 	private final Skin skin;
 	private final Viewport viewport;
 
-	// Whether the menu or difficulty is showing
+	// Whether the menu or difficulty or load options are showing
 	private boolean showMenu;
+	private boolean showLoad;
+
+	// Controls warning message
+	private String warning;
+	private Runnable continueCallback;
+
+	private VerticalGroup saveGroup;
+    private ArrayList<TextButton> saveTextButtons;
+    private ArrayList<TextButton> saveDeleteButtons;
 
 	/**
 	 * The constructor for the main menu screen. All game logic for the main
@@ -58,6 +66,10 @@ public class MainMenuScreen implements Screen {
 		
 		// Show the menu options
 		showMenu = true;
+		showLoad = false;
+
+		// Initialise warning message
+        warning = "";
 
 		// Create an orthographic camera
 		camera = new OrthographicCamera();
@@ -146,11 +158,15 @@ public class MainMenuScreen implements Screen {
 	*					and then the difficulty options
 	*/
 	private void toggleMenuButtons(boolean show, Table buttonTable) {
-		if (show) {
+		if (show && warning.length() == 0) {
 			createMenuOptions(buttonTable);
-		} else {
+		} else if (showLoad && warning.length() == 0) {
+			createSaveOptions(buttonTable);
+		} else if (!showLoad && warning.length() == 0) {
 			createDifficultyOptions(buttonTable);
-		}
+		} else {
+            createWarning(buttonTable);
+        }
 	}
 
 	/**
@@ -165,35 +181,14 @@ public class MainMenuScreen implements Screen {
 	private void createMenuOptions(Table buttonTable) {
 		// Create menu buttons
 		TextButton playButton = new TextButton("Play", skin);
+		TextButton loadButton = new TextButton("Load", skin);
 		TextButton howToPlayButton = new TextButton("How To Play", skin);
 		TextButton quitButton = new TextButton("Quit", skin);
-
-		// Create load buttons
-		TextButton loadButton = new TextButton("Load", skin);
-		loadButton.center().pad(10, 7, 10, 7).setTouchable(Touchable.disabled);
-
-		// Create load vertical group
-		HorizontalGroup loadGroup = new HorizontalGroup();
-		loadGroup.center().addActor(loadButton);
-
-		// Create array to store save buttons
-		ArrayList<TextButton> saveButtons = new ArrayList<TextButton>();
-		for (int i = 0; i < 3; i++) {
-			// Create 3 save buttons
-			TextButton saveButton = new TextButton(String.valueOf(i + 1), skin);
-			boolean saveEmpty = game.getSaveControls().checkIfSaveEmpty(i + 1);
-			saveButton.center().pad(10, (14 - (2 - i)), 10, (16 - i)).setTouchable(saveEmpty ? Touchable.disabled : Touchable.enabled);
-			saveButton.setColor(saveEmpty ? Color.DARK_GRAY : Color.GREEN);
-			// Add button to group and array
-			loadGroup.space(10);
-			loadGroup.addActor(saveButton);
-			saveButtons.add(saveButton);
-		}
 
 		// Add buttons to table
 		buttonTable.add(playButton).padBottom(20).width(200).height(40);
 		buttonTable.row();
-		buttonTable.add(loadGroup).padBottom(20).width(200).height(40);
+		buttonTable.add(loadButton).padBottom(20).width(200).height(40);
 		buttonTable.row();
 		buttonTable.add(howToPlayButton).padBottom(20).width(200).height(40);
 		buttonTable.row();
@@ -209,18 +204,16 @@ public class MainMenuScreen implements Screen {
 			}
 		});
 
-		// Add load functionality to buttons
-		for (int i = 0; i < saveButtons.size(); i++) {
-			final int index = i;
-			saveButtons.get(index).addListener(new ClickListener() {
-				@Override
-				public void clicked(InputEvent event, float x, float y) {
-					SFX.sfx_button_click.play();
-					game.loadGameFromSave(index + 1);
-					dispose();
-				}
-			});
-		}
+		// Show difficulty options on press
+		loadButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				SFX.sfx_button_click.play();
+				showMenu = false;
+				showLoad = true;
+				show();
+			}
+		});
 
 		// Show controls on press
 		howToPlayButton.addListener(new ClickListener() {
@@ -309,10 +302,214 @@ public class MainMenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				SFX.sfx_button_click.play();
 				showMenu = true;
+				showLoad = false;
 				show();
 			}
 		});
 	}
+
+	/**
+	 * =======================================================================
+	 *       	Modified for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+     *			Creates the menu options save file rows
+     *                and displays them in a table
+	 *
+	 * @param buttonTable	The table to display the buttons in
+	 */
+	private void createSaveOptions(Table buttonTable) {
+        // Create back button
+        TextButton backButton = new TextButton("Back", skin);
+
+        // The vertical group to store the save buttons
+        Stack saveStack = new Stack();
+        saveGroup = new VerticalGroup();
+        saveTextButtons = new ArrayList<>();
+        saveDeleteButtons = new ArrayList<>();
+        generateSaveButtons();
+        saveStack.add(saveGroup);
+        buttonTable.add(saveStack).padBottom(20);
+        buttonTable.row();
+		buttonTable.add(backButton).width(200).height(40);
+
+        // Create save buttons
+        generateSaveSelector();
+
+        // Go back to other options on press
+		backButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				SFX.sfx_button_click.play();
+				showMenu = true;
+				show();
+			}
+        });
+
+        // Add save and load save functionality
+        for (int i = 0; i < 3; i++) {
+            int index = i + 1;
+            saveTextButtons.get(i).addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    warning = "Are you sure you want to load a new game? \n\n Unsaved progress will be lost";
+                    continueCallback = new Runnable() {
+                        @Override
+                        public void run() {
+                            game.loadGameFromSave(index);
+                        }
+                    };
+                    show();  
+                }
+            });
+            saveDeleteButtons.get(i).addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    warning = "Are you sure you want to delete this save? \n\n This cannot be undone";
+                    continueCallback = new Runnable() {
+                        @Override
+                        public void run() {
+                            game.getSaveControls().deleteSave(index);
+                            show();
+                        }
+                    };
+                    show();
+                }
+            });
+        }
+    }
+
+    /*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+    /**
+     * Builds each save file item which contains:
+     * - save option button (save or overwrite)
+     * - text button (empty or load)
+     */
+    private void generateSaveButtons() {
+        saveTextButtons.clear();
+        for (int i=1; i <= 3; i++) {
+            boolean emptySave = this.game.getSaveControls().checkIfSaveEmpty(i);
+
+            TextButton textButton = new TextButton("", skin);
+            TextButton optionButton = new TextButton("  Save Game  ", skin);
+            TextButton deleteButton = new TextButton(" Delete Save ", skin);
+            deleteButton.setColor(Color.RED);
+            optionButton.setColor(Color.GREEN);
+
+            if (emptySave) {
+                textButton.setText("  Empty Save  ");
+                textButton.setColor(Color.DARK_GRAY);
+            } else {
+                textButton.setText("   Load Save   ");
+            }
+            optionButton.pad(10).padTop(5).padBottom(5);
+            textButton.pad(10).padTop(5).padBottom(5);
+			deleteButton.pad(10).padTop(5).padBottom(5);
+            saveTextButtons.add(textButton);
+            saveDeleteButtons.add(deleteButton);
+        }
+    }
+
+    /*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+    /**
+     * Builds the save selector section of the screen
+     * it is called once the screen is opened
+     */
+    private void generateSaveSelector() {
+        saveGroup.clear();
+        saveGroup.expand();
+        saveGroup.center();
+        
+        for (int i=0; i <= 2; i++) {
+            saveGroup.space(10);
+            final int index = i + 1;
+
+            TextButton nameButton = new TextButton(this.game.getSaveControls().getSaveName(index), skin);
+            nameButton.pad(10).padTop(5).padBottom(5);
+            nameButton.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    StringInputListener listener = new StringInputListener(game.getSaveControls(), nameButton, index);
+                    Gdx.input.getTextInput(listener, "Enter Save Name", "", "Save " + index);
+                }
+            });
+            
+            HorizontalGroup hgSave = new HorizontalGroup();
+            hgSave.center();
+            hgSave.pad(10);
+            hgSave.addActor(saveTextButtons.get(i));
+            hgSave.space(15);
+            hgSave.addActor(saveDeleteButtons.get(i));
+
+            VerticalGroup vgSave = new VerticalGroup();
+            vgSave.padTop(10);
+            vgSave.addActor(nameButton);
+            vgSave.addActor(hgSave);
+
+            Stack stack = new Stack();
+			stack.addActor(new BackgroundBox(100, 100, Color.GRAY, 20));
+            stack.addActor(vgSave);
+            saveGroup.addActor(stack);
+        }
+    }
+
+	/*
+	 *  =======================================================================
+	 *       	Added for Assessment 4		@author Archie Godfrey
+	 *  =======================================================================
+	 */
+    /**
+     * Renders a warning message with a cancel and continue button
+     * @param buttonTable   The table to draw the message to
+     */
+    private void createWarning(Table buttonTable) {
+        // Create warning message
+        Label message = new Label(warning, new Label.LabelStyle(game.coolFont, Color.WHITE));
+        message.setFontScale(1.1f);
+        message.setAlignment(1);
+
+        // Create menu buttons
+        HorizontalGroup buttons = new HorizontalGroup();
+        TextButton continueButton = new TextButton("Continue", skin);
+        continueButton.pad(15).padTop(8).padBottom(8);
+        TextButton cancelButton = new TextButton("Cancel", skin);
+        cancelButton.pad(15).padTop(8).padBottom(8);
+        buttons.addActor(cancelButton);
+        buttons.space(200);
+        buttons.addActor(continueButton);
+        buttons.setPosition(0, 0);
+
+        // Add buttons to table
+        buttonTable.center();
+        buttonTable.add(message).padBottom(40);
+        buttonTable.row();
+        buttonTable.add(buttons).padBottom(40);
+
+        // Add listeners that run callbacks on press
+        cancelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                SFX.sfx_button_click.play();
+                warning = "";
+                show();
+            }
+        });
+		continueButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+                SFX.sfx_button_click.play();
+                warning = "";
+				continueCallback.run();
+			}
+		});
+    }
 
 	@Override
 	public void hide() {

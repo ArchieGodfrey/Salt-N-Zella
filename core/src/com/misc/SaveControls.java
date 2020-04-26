@@ -317,10 +317,14 @@ public class SaveControls {
     public void setSaveName(int saveNumber, String name) {
         try {
             SaveFile saveFile = readSaveFromFile(saveNumber);
+            System.out.println(saveFile.name);
             saveFile.name = name;
             writeSaveToFile(saveNumber, saveFile);
         } catch (IOException e) {
-            System.out.println("Unable to change save name");
+            System.out.println("Unable to change save name, creating empty file");
+            SaveFile saveFile = new SaveFile();
+            saveFile.name = name;
+            writeSaveToFile(saveNumber, saveFile);
         }
     }
 

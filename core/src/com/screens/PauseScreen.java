@@ -147,13 +147,13 @@ public class PauseScreen implements Screen {
 	*       	Modified for Assessment 4		@author Archie Godfrey
 	*  =======================================================================
 	*			Toggles the menu buttons to first show all options
-	*					and then the difficulty options
+	*					and then the save options
 	*/
 	private void toggleMenuButtons(boolean show, Table buttonTable) {
 		if (show && warning.length() == 0) {
 			createMenuOptions(buttonTable);
 		} else if (warning.length() == 0) {
-			createDifficultyOptions(buttonTable);
+			createSaveOptions(buttonTable);
 		} else {
             createWarning(buttonTable);
         }
@@ -233,12 +233,12 @@ public class PauseScreen implements Screen {
 	 * =======================================================================
 	 *       	Modified for Assessment 4		@author Archie Godfrey
 	 *  =======================================================================
-	 *			Creates the menu options "Easy", "Medium", "Hard"
-	 *				and "Back" and displays them in a table
+     *			Creates the menu options save file rows
+     *                and displays them in a table
 	 *
 	 * @param buttonTable	The table to display the buttons in
 	 */
-	private void createDifficultyOptions(Table buttonTable) {
+	private void createSaveOptions(Table buttonTable) {
         // Create back button
         TextButton backButton = new TextButton("Back", skin);
 
@@ -387,7 +387,7 @@ public class PauseScreen implements Screen {
             nameButton.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    StringInputListener listener = new StringInputListener(gameScreen, nameButton, index);
+                    StringInputListener listener = new StringInputListener(gameScreen.getSaveControls(), nameButton, index);
                     Gdx.input.getTextInput(listener, "Enter Save Name", "", "Save " + index);
                 }
             });
