@@ -501,7 +501,8 @@ public class GameScreen implements Screen {
 	 */
 	@Override
 	public void resize(int width, int height) {
-		camera.setToOrtho(false, width, height);
+		this.camera.setToOrtho(false, width, height);
+		this.camera.position.set(this.firestation.getActiveFireTruck().getCentreX(), this.firestation.getActiveFireTruck().getCentreY(), 0);
 	}
 
 	/**
