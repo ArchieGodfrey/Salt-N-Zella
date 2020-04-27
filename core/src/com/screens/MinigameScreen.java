@@ -41,10 +41,12 @@ public class MinigameScreen implements Screen {
     //Declare images
     private final Texture waterImage;
     private final Texture background;
+    private final ArrayList<Texture> fireFrames;
 
     // score and time
     private int score;
     private int time;
+    private int animationTime;
 
     //declare camera items
     private final OrthographicCamera camera;
@@ -99,6 +101,13 @@ public class MinigameScreen implements Screen {
         //load images for sprites
         waterImage = new Texture(Gdx.files.internal("Minigame/splashcircle.png"));
         background = new Texture(Gdx.files.internal("Minigame/minigame_bg_new.png"));
+
+        // Build fire frame textures
+        this.fireFrames = new ArrayList<Texture>();
+		for (int i = 1; i <= 3; i++) {
+			Texture texture = new Texture("fire" + i + ".png");
+			this.fireFrames.add(texture);
+		}
 
         //alien creation
         onScreenETs = new ArrayList<Alien>();
@@ -168,12 +177,15 @@ public class MinigameScreen implements Screen {
 
         // Start aliens spawning in top row
         this.currentRowSpawn = 2;
+
+        // Create animation time for flames
+        this.animationTime = 150;
     }
 
     @Override
     public void render(float delta) {
         //render screen
-        Gdx.gl.glClearColor(1, 0, 0.1f, 1);
+        Gdx.gl.glClearColor(0.6f, 0.25f, 0, 0.1f);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
         camera.update();
@@ -183,6 +195,16 @@ public class MinigameScreen implements Screen {
 
         game.spriteBatch.begin();
         
+        // Animate fire
+        if (this.animationTime > 0) {
+            this.animationTime -= 1;
+        } else {
+            this.animationTime = 150;
+        }
+        for (Vector2 position : this.spawnPositions) {
+            game.spriteBatch.draw(this.fireFrames.get(Math.round(this.animationTime / 10) % 3), position.x, position.y - 20, 140, 80);
+        }
+
         //draw aliens on screen
         for (Alien alien : onScreenETs) {
             game.spriteBatch.draw(alien.getTexture(), alien.getX(), alien.getY(), 100, 100);
