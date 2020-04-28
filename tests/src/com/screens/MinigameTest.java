@@ -4,8 +4,6 @@ import com.Kroy;
 import com.badlogic.gdx.math.Vector2;
 import com.entities.Alien;
 import com.misc.Constants;
-import com.screens.GameScreen;
-import com.screens.MinigameScreen;
 import com.sprites.MinigameSprite;
 import com.testrunner.GdxTestRunner;
 import org.junit.Before;

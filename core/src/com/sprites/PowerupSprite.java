@@ -28,25 +28,33 @@ public class PowerupSprite extends Sprite {
     private final ArrayList<Texture> powerupSlices;
 
     // Effect duration
-    private int activeTime = 600; //10 seconds
+    private int activeTime;
+
+    // Effect timeout
+    private int timeout;
+    private int maxTimeout;
     
     // Effect type
     private String type;
 
     /**
      * Constructor for powerup sprite
-     * @param type the type of powerup that will be spawned
+     * @param type          the type of powerup that will be spawned
      * @param textureSlices the built array of textures that will be used to draw the 3d sprite
-     * @param x coordinate where the sprite spawns
-     * @param y coordinate where the sprite spawns
+     * @param x             coordinate where the sprite spawns
+     * @param y             coordinate where the sprite spawns
+     * @param difficulty    the current game difficulty
      */
-    public PowerupSprite(String type, ArrayList<Texture> textureSlices, float x, float y) {
+    public PowerupSprite(String type, ArrayList<Texture> textureSlices, float x, float y,int difficulty) {
         super(new Texture(Gdx.files.internal("powerup.png")));
         this.setBounds(x*Constants.TILE_DIMS, y*Constants.TILE_DIMS, 1.5f * 4, 1.5f * Constants.TILE_DIMS);
         this.hitBox = new Polygon(new float[]{0,0,this.getWidth(),0,this.getWidth(),this.getHeight(),0,this.getHeight()});
         this.hitBox.setPosition(this.getX(), this.getY());
         this.type = type;
         this.powerupSlices = textureSlices;
+        this.activeTime = 1000 / difficulty;
+        this.timeout = 0;
+        this.maxTimeout = 1600 * difficulty;
     }
 
     /**
@@ -59,8 +67,11 @@ public class PowerupSprite extends Sprite {
         //Rotate the sprite by factor
         int rotateSpd = 1;
         rotate(rotateSpd);
-
-        drawVoxelImage(batch);
+        if (this.timeout > 0) {
+            this.timeout -= 1;
+        } else {
+            drawVoxelImage(batch);
+        }
     }
 
     /**
@@ -68,7 +79,7 @@ public class PowerupSprite extends Sprite {
      * @param activeFireTruck   The active truck to apply the effect to
      */
     public void action(Firetruck activeFireTruck){
-        if (type == "random") {
+        if (type == "random" && this.timeout <= 0) {
             int random = (int)(Math.random() * 4.4);
             switch(random){
                 case 0:
@@ -87,8 +98,10 @@ public class PowerupSprite extends Sprite {
                     activeFireTruck.setPowerup(activeTime, "damageUp");
                     break;
             }
-        } else {
+            this.timeout = this.maxTimeout;
+        } else if (this.timeout <= 0) {
             activeFireTruck.setPowerup(activeTime, type);
+            this.timeout = this.maxTimeout;
         }
     }
 

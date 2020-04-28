@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.misc.Constants;
 import com.misc.Arrow;
 import com.misc.ResourceBar;
+import com.misc.SaveControls.SavedFiretruck;
 import com.screens.GameScreen;
 import com.sprites.MovementSprite;
 
@@ -110,15 +111,17 @@ public class Firetruck extends MovementSprite {
 
         this.powerupActive = false;
 
-        this.damage = this.getType().getProperties()[7] / difficulty;
+        this.damage = this.getType().getProperties()[7];
 
         // If loading from a save file
         if (gameScreen.getSaveControls().getCurrentSaveNumber() != 0) {
-            this.getHealthBar().setCurrentAmount(gameScreen.getSaveControls().getSavedFiretruck(type).health);
-            this.waterBar.setCurrentAmount(gameScreen.getSaveControls().getSavedFiretruck(type).water);
-            this.isBought = gameScreen.getSaveControls().getSavedFiretruck(type).isBought;
-            this.location = gameScreen.getSaveControls().getSavedFiretruck(type).respawnLocation;
-            this.respawn();           
+            SavedFiretruck savedFiretruck = gameScreen.getSaveControls().getSavedFiretruck(type);
+            this.getHealthBar().setCurrentAmount(savedFiretruck.health);
+            this.waterBar.setCurrentAmount(savedFiretruck.water);
+            this.isBought = savedFiretruck.isBought;
+            this.location = savedFiretruck.respawnLocation;
+            this.respawn();
+            this.setPosition(savedFiretruck.x, savedFiretruck.y);
         }
 
     }

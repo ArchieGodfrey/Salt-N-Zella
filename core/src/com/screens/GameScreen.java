@@ -1,8 +1,6 @@
 package com.screens;
 
 // LibGDX imports
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -11,6 +9,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.entities.Firestation;
 import com.misc.SFX;
 import com.misc.SaveControls;
+import com.misc.SaveControls.SaveFile;
 import com.pathFinding.Junction;
 import com.pathFinding.MapGraph;
 import com.badlogic.gdx.Gdx;
@@ -59,7 +58,6 @@ public class GameScreen implements Screen {
 	// Private values for rendering
 	private final ShapeRenderer shapeRenderer;
 	private final OrthographicCamera camera;
-	private final ShaderProgram vignetteSepiaShader;
 
 	// Private values for tiled map
 	private final TiledMap map;
@@ -135,10 +133,6 @@ public class GameScreen implements Screen {
 		this.renderer = new OrthogonalTiledMapRenderer(map, MAP_SCALE);
 		this.shapeRenderer = new ShapeRenderer();
 
-		ShaderProgram.pedantic = false;
-		this.vignetteSepiaShader = new ShaderProgram(Gdx.files.internal("shaders/vignetteSepia.vsh"), Gdx.files.internal("shaders/vignetteSepia.fsh"));
-		this.renderer.getBatch().setShader(vignetteSepiaShader);
-
 		// Create an array to store all projectiles in motion
 		this.projectiles = new ArrayList<>();
 
@@ -200,13 +194,13 @@ public class GameScreen implements Screen {
         MapLayers mapLayers = map.getLayers();
         this.foregroundLayers = new int[] {
 			mapLayers.getIndex("Buildings Foreground"),
-			mapLayers.getIndex("Carpark")
+			mapLayers.getIndex("Carpark"),
+			mapLayers.getIndex("Trees")
         };
         this.backgroundLayers = new int[] {
 			mapLayers.getIndex("River"),
 			mapLayers.getIndex("Road"),
-			mapLayers.getIndex("Buildings"),
-			mapLayers.getIndex("Trees")
+			mapLayers.getIndex("Buildings")
         };
 
 		// Create arrays of textures for animations
@@ -239,13 +233,13 @@ public class GameScreen implements Screen {
 		//Added for assessment 4
 		// creates powerup sprites around the map
 		powerupSprites = new ArrayList<>();
-		powerupSprites.add(new PowerupSprite("ghost", this.buildPowerupTextures("ghost"), 40, 88));
-		powerupSprites.add(new PowerupSprite("replenish", this.buildPowerupTextures("replenish"),52, 38));
-		powerupSprites.add(new PowerupSprite("immunity", this.buildPowerupTextures("immunity"),103, 48));
-		powerupSprites.add(new PowerupSprite("speedUp", this.buildPowerupTextures("speedUp"),103, 93));
-		powerupSprites.add(new PowerupSprite("damageUp", this.buildPowerupTextures("damageUp"),62, 102));
-		powerupSprites.add(new PowerupSprite("random", this.buildPowerupTextures("random"),79, 15));
-		powerupSprites.add(new PowerupSprite("infiniteWater", this.buildPowerupTextures("infiniteWater"),21, 13));
+		powerupSprites.add(new PowerupSprite("ghost", this.buildPowerupTextures("ghost"), 40, 88, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("replenish", this.buildPowerupTextures("replenish"),52, 38, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("immunity", this.buildPowerupTextures("immunity"),103, 48, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("speedUp", this.buildPowerupTextures("speedUp"),103, 93, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("damageUp", this.buildPowerupTextures("damageUp"),62, 102, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("random", this.buildPowerupTextures("random"),79, 15, this.game.getDifficulty()));
+		powerupSprites.add(new PowerupSprite("infiniteWater", this.buildPowerupTextures("infiniteWater"),21, 13, this.game.getDifficulty()));
 
 		//Added for assessment 4
 		// creates a texture array of all powerup icons for drawing on hud
@@ -333,7 +327,7 @@ public class GameScreen implements Screen {
 			}
 		}, 7,10);
 
-		// Update the tutotial mode
+		// Update the tutorial mode
 		isInTutorial = true;
 		if (!isTutorial) this.finishTutorial();
 	}
@@ -362,18 +356,6 @@ public class GameScreen implements Screen {
 		// MUST BE FIRST: Clear the screen each frame to stop textures blurring
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		vignetteSepiaShader.begin();
-		if (isInTutorial) {
-			vignetteSepiaShader.setUniformf("u_intensity", 0.8f);
-			vignetteSepiaShader.setUniformf("u_outerRadius", 0.6f);
-			vignetteSepiaShader.setUniformf("u_sepia", 0.2f);
-		} else {
-			vignetteSepiaShader.setUniformf("u_intensity", camera.zoom-0.4f);
-			vignetteSepiaShader.setUniformf("u_outerRadius", calculateValueForProgress(0.5f, 0.8f));
-			vignetteSepiaShader.setUniformf("u_sepia", calculateValueForProgress(0.65f, 0.3f));
-		}
-		vignetteSepiaShader.end();
 
 		// ---- 1) Update camera and map properties each iteration -------- //
 
@@ -436,15 +418,17 @@ public class GameScreen implements Screen {
 			if (DEBUG_ENABLED) patrol.drawDebug(shapeRenderer);
 		}
 
-		// Render mini game sprites
-		for (MinigameSprite minigameSprite : minigameSprites) {
-			minigameSprite.update(this.game.batch);
-		}
+		if (!isInTutorial) {
+			// Render mini game sprites
+			for (MinigameSprite minigameSprite : minigameSprites) {
+				minigameSprite.update(this.game.batch);
+			}
 
-		//Added for assessment 4
-		// Render powerup sprites
-		for (PowerupSprite powerupSprite : powerupSprites) {
-			powerupSprite.update(this.game.batch);
+			//Added for assessment 4
+			// Render powerup sprites
+			for (PowerupSprite powerupSprite : powerupSprites) {
+				powerupSprite.update(this.game.batch);
+			}
 		}
 
 		this.firestation.update(this.game.batch);
@@ -517,11 +501,8 @@ public class GameScreen implements Screen {
 	 */
 	@Override
 	public void resize(int width, int height) {
-		this.camera.viewportHeight = height;
-		this.camera.viewportWidth = width;
-		vignetteSepiaShader.begin();
-		vignetteSepiaShader.setUniformf("u_resolution", width, height);
-		vignetteSepiaShader.end();
+		this.camera.setToOrtho(false, width, height);
+		this.camera.position.set(this.firestation.getActiveFireTruck().getCentreX(), this.firestation.getActiveFireTruck().getCentreY(), 0);
 	}
 
 	/**
@@ -577,7 +558,6 @@ public class GameScreen implements Screen {
 		}
 		renderer.dispose();
 		map.dispose();
-		vignetteSepiaShader.dispose();
 		stage.dispose();
 		carparkScreen.dispose();
 		shapeRenderer.dispose();
@@ -802,8 +782,6 @@ public class GameScreen implements Screen {
 		for (int i=0; i<this.powerupSprites.size(); i++) {
 			PowerupSprite powerupSprite = this.powerupSprites.get(i);
 			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), powerupSprite.getHitBox())) {
-				this.powerupSprites.remove(powerupSprite);
-
 				powerupSprite.action(this.firestation.getActiveFireTruck());
 			}
 		}
@@ -1318,7 +1296,7 @@ public class GameScreen implements Screen {
 
 	/*
 	 *  =======================================================================
-	 *        Modified for Assessment 3		@author Archie Godfrey
+	 *        Modified for Assessment 4		@author Archie Godfrey
 	 *  =======================================================================
 	 * 	Stopped resetting stats and position if loading from a save file
 	 */
@@ -1340,18 +1318,20 @@ public class GameScreen implements Screen {
 			popupMessages.clear();
 			showPopupText("Good luck!", 1, 5);
 			firestationTimer.start();
-			// If loading from a save file
+			// If not loading from a save file
 			if (this.game.getSaveControls().getCurrentSaveNumber() == 0) {
 				firestation.getActiveFireTruck().getWaterBar().resetResourceAmount();
 				firestation.getActiveFireTruck().setRespawnLocation(0);
 				firestation.getActiveFireTruck().respawn();
 				firestation.getActiveFireTruck().setHose(false);
 			} else {
-				this.time = this.game.getSaveControls().getSaveFile().time;
-				this.score = this.game.getSaveControls().getSaveFile().score;
+				SaveFile saveFile = this.game.getSaveControls().getSaveFile();
+				this.game.setDifficulty(saveFile.difficulty);
+				this.time = saveFile.time;
+				this.score = saveFile.score;
 				this.firestation.parkFireTruck(this.getActiveTruck());
 				this.firestation.setActiveFireTruck(
-					this.firestation.getFiretruckByType(this.game.getSaveControls().getSaveFile().activeFireTruckType)
+					this.firestation.getFiretruckByType(saveFile.activeFireTruckType)
 				);
 			}
 			this.ETPatrols.clear();
@@ -1361,25 +1341,6 @@ public class GameScreen implements Screen {
 			popupMessages.addLast("{FADE=0;0.75;1}Pro Tip: Drive straight into a wall to perform a sick 180 flip.");
 			SFX.playGameMusic();
 		}
-	}
-
-	/*
-	 *  =======================================================================
-	 *                          Added for Assessment 3
-	 *  =======================================================================
-	 */
-	/**
-	 * Calculates the sepia and vignette values which
-	 * change as the user destroyed
-	 *
-	 * @param start	starting value at start of game
-	 * @param end	final value at end of game
-	 * @return		intensity of sepia or vignette
-	 * 				radius depending on progress
-	 */
-	private float calculateValueForProgress(float start, float end) {
-		float progress = (float) getETFortressesDestroyed()[0] / (float) getETFortressesDestroyed()[1];
-		return start - (progress*(start-end));
 	}
 
 	/**
