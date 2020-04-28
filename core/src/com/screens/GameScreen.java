@@ -447,7 +447,6 @@ public class GameScreen implements Screen {
 		this.timeLabel.setText("Time: " + this.getFireStationTime());
 
 
-
 		//Added for assessment 4
 		//Display all the active firetruck powerups on screen with their respective icon.
 		if (this.getActiveTruck().getPowerupDisplay().size() > 0) {
@@ -456,16 +455,17 @@ public class GameScreen implements Screen {
 			for(String temp : this.getActiveTruck().getPowerupDisplay()){
 				powerupDisplayText += "\n" + temp + "\n";
 			}
+			this.powerupLabel.setAlignment(Align.left);
 			this.powerupLabel.setText("Active Powerups:\n" + powerupDisplayText);
-
 			//Draw each icon next to the powerup text
 			ArrayList<Integer> active = this.getActiveTruck().getActivePowerups();
 			int j = 0;
 			for(int i : active){
-				j++;
 				stage.getBatch().begin();
-				stage.getBatch().draw(powerupIcons.get(i), this.camera.viewportWidth*0.76f, this.camera.viewportHeight*0.89f-(j*49), 512*0.07f, 512*0.07f);
+				stage.getBatch().draw(powerupIcons.get(i), this.stage.getWidth()*0.72f , this.stage.getHeight()*0.76f  - (j*49), 512*0.07f, 512*0.07f);
 				stage.getBatch().end();
+
+				j++;
 			}
 		} else {
 			this.powerupLabel.setText("");
