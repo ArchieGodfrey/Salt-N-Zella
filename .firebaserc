@@ -1,5 +1,14 @@
 {
   "projects": {
-    "default": "ADD_YOUR_PROJECT_NAME_HERE"
+    "default": "sepr-documentation"
   },
+  "targets": {
+    "sepr-documentation": {
+      "hosting": {
+        "salt-and-sepr": [
+          "salt-and-sepr"
+        ]
+      }
+    }
+  }
 }
