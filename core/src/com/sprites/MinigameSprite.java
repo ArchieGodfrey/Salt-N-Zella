@@ -25,11 +25,9 @@ public class MinigameSprite extends SimpleSprite {
     private final ArrayList<Texture> fireFrames;
     /**
      * Constructor for minigame sprite
-     *
-     *
-     *
-     * @param x coordinate where the sprite spawns
-     * @param y coordinate where the sprite spawns
+     * @param x     coordinate where the sprite spawns
+     * @param y     coordinate where the sprite spawns
+     * @param tex   The textures of the flames
      */
     public MinigameSprite(float x, float y, ArrayList<Texture> tex) {
         super(new Texture(Gdx.files.internal("empty.png")));

@@ -39,10 +39,11 @@ public class PowerupSprite extends Sprite {
 
     /**
      * Constructor for powerup sprite
-     * @param type the type of powerup that will be spawned
+     * @param type          the type of powerup that will be spawned
      * @param textureSlices the built array of textures that will be used to draw the 3d sprite
-     * @param x coordinate where the sprite spawns
-     * @param y coordinate where the sprite spawns
+     * @param x             coordinate where the sprite spawns
+     * @param y             coordinate where the sprite spawns
+     * @param difficulty    the current game difficulty
      */
     public PowerupSprite(String type, ArrayList<Texture> textureSlices, float x, float y,int difficulty) {
         super(new Texture(Gdx.files.internal("powerup.png")));

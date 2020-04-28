@@ -149,7 +149,6 @@ public class SaveControls {
      * @param score         The game score to be converted
      * @param time          The game time to be converted
      * @param difficulty    The game difficulty to be converted
-     * @param activeTruck   The active firetruck to be converted
      * @param firestation   The firestation to be converted
      * @param ETFortresses  The ETFortresses to be converted
      */

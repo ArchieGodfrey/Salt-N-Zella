@@ -21,7 +21,7 @@ public class StringInputListener implements TextInputListener {
      * can be called when the player has finished entering a string
      * @param saveControls  The save controls needed to change the save file name
      * @param button        The button's text with the player's input
-     * @param saveCom       The save number that is being modified
+     * @param saveNumber    The save number that is being modified
      */
     public StringInputListener(SaveControls saveControls, TextButton button, int saveNumber) {
         this.button = button;
